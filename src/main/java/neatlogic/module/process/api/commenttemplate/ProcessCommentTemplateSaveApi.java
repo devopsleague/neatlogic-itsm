@@ -8,7 +8,6 @@ import neatlogic.framework.dto.FieldValidResultVo;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.auth.PROCESS_COMMENT_TEMPLATE_MODIFY;
-import neatlogic.module.process.dao.mapper.process.ProcessCommentTemplateMapper;
 import neatlogic.framework.process.dto.ProcessCommentTemplateVo;
 import neatlogic.framework.process.exception.commenttemplate.ProcessCommentTemplateNameRepeatException;
 import neatlogic.framework.process.exception.commenttemplate.ProcessCommentTemplateNotFoundException;
@@ -16,6 +15,7 @@ import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.IValid;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.process.ProcessCommentTemplateMapper;
 import neatlogic.module.process.service.ProcessCommentTemplateService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,13 +68,13 @@ public class ProcessCommentTemplateSaveApi extends PrivateApiComponentBase {
             if (_vo == null) {
                 throw new ProcessCommentTemplateNotFoundException(id);
             }
-            /** 没有权限则不允许编辑系统模版 */
+            /* 没有权限则不允许编辑系统模版 */
             if (ProcessCommentTemplateVo.TempalteType.SYSTEM.getValue().equals(_vo.getType()) && !AuthActionChecker.check(PROCESS_COMMENT_TEMPLATE_MODIFY.class.getSimpleName())) {
                 throw new PermissionDeniedException(PROCESS_COMMENT_TEMPLATE_MODIFY.class);
             }
         } else {
             String type = jsonObj.getString("type");
-            /** 没有权限则不允许创建系统模版 */
+            /* 没有权限则不允许创建系统模版 */
             if (ProcessCommentTemplateVo.TempalteType.SYSTEM.getValue().equals(type) && !AuthActionChecker.check(PROCESS_COMMENT_TEMPLATE_MODIFY.class.getSimpleName())) {
                 throw new PermissionDeniedException(PROCESS_COMMENT_TEMPLATE_MODIFY.class);
             }

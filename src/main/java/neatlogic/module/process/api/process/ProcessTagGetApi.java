@@ -1,28 +1,22 @@
 package neatlogic.module.process.api.process;
 
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.common.dto.BasePageVo;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.process.ProcessTagMapper;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
+import neatlogic.framework.common.dto.ValueTextVo;
+import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.dto.ProcessTagVo;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.process.ProcessTagMapper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.common.dto.ValueTextVo;
-import neatlogic.framework.process.dto.ProcessTagVo;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.Description;
-import neatlogic.framework.restful.annotation.Input;
-import neatlogic.framework.restful.annotation.OperationType;
-import neatlogic.framework.restful.annotation.Output;
-import neatlogic.framework.restful.annotation.Param;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +25,7 @@ import java.util.List;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessTagGetApi extends PrivateApiComponentBase {
 
-    @Autowired
+    @Resource
     private ProcessTagMapper processTagMapper;
 
     @Override

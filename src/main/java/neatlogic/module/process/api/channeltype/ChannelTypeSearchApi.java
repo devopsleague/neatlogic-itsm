@@ -1,31 +1,28 @@
 package neatlogic.module.process.api.channeltype;
 
-import java.util.List;
-
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-
+import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.util.PageUtil;
+import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.dto.ChannelTypeVo;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ChannelTypeSearchApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ChannelTypeMapper channelTypeMapper;
 
 	@Override
@@ -35,7 +32,7 @@ public class ChannelTypeSearchApi extends PrivateApiComponentBase {
 
 	@Override
 	public String getName() {
-		return "服务类型列表搜索接口";
+		return "服务类型列表搜索";
 	}
 
 	@Override
@@ -57,7 +54,7 @@ public class ChannelTypeSearchApi extends PrivateApiComponentBase {
 		@Param(name = "rowNum", type = ApiParamType.INTEGER, isRequired = true, desc = "总行数"),
 		@Param(name = "tbodyList", explode = ChannelTypeVo[].class, desc = "服务类型列表")
 	})
-	@Description(desc = "服务类型列表搜索接口")
+	@Description(desc = "服务类型列表搜索")
 	@Override
 	public Object myDoService(JSONObject jsonObj) throws Exception {
 		ChannelTypeVo channelTypeVo = JSON.parseObject(jsonObj.toJSONString(), new TypeReference<ChannelTypeVo>() {});

@@ -1,5 +1,8 @@
 package neatlogic.module.process.api.process;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.dto.FieldValidResultVo;
@@ -13,12 +16,10 @@ import neatlogic.framework.restful.core.IValid;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
 import neatlogic.framework.util.RegexUtils;
 import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 @Service
 @Transactional
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AuthAction(action = PROCESS_MODIFY.class)
 public class ProcessUpdateApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 	
 	@Override

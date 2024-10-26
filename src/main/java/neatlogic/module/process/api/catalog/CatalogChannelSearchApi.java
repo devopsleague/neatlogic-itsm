@@ -7,18 +7,18 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.common.util.PageUtil;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.framework.process.dto.CatalogVo;
 import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.service.CatalogService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +27,13 @@ import java.util.List;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class CatalogChannelSearchApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 
-	@Autowired
+	@Resource
 	private CatalogMapper catalogMapper;
 	
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 
 	@Override
@@ -100,7 +100,7 @@ public class CatalogChannelSearchApi extends PrivateApiComponentBase {
 			int fromIndex = basePageVo.getStartNum();
 			if(fromIndex < rowNum) {
 				int toIndex = fromIndex + basePageVo.getPageSize();
-				toIndex = toIndex > rowNum ? rowNum : toIndex;
+				toIndex = Math.min(toIndex, rowNum);
 				resultObj.put("treeList", catalogChannelList.subList(fromIndex, toIndex));
 			}else {
 				resultObj.put("treeList", new ArrayList<>());

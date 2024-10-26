@@ -1,24 +1,22 @@
 package neatlogic.module.process.api.channeltype;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.TypeReference;
+import com.google.common.base.Objects;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.ValueTextVo;
 import neatlogic.framework.common.util.PageUtil;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
 import neatlogic.framework.process.dto.ChannelTypeVo;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
-import com.google.common.base.Objects;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Service
@@ -26,7 +24,7 @@ import java.util.List;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ChannelTypeSearchForSelectApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ChannelTypeMapper channelTypeMapper;
 
 	@Override

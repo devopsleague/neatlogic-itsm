@@ -1,23 +1,22 @@
 package neatlogic.module.process.api.priority;
 
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.OperationType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSONObject;
-
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.module.process.dao.mapper.catalog.PriorityMapper;
+import neatlogic.framework.process.auth.PRIORITY_MODIFY;
 import neatlogic.framework.process.dto.PriorityVo;
 import neatlogic.framework.process.exception.priority.PriorityNotFoundException;
 import neatlogic.framework.restful.annotation.Description;
 import neatlogic.framework.restful.annotation.Input;
+import neatlogic.framework.restful.annotation.OperationType;
 import neatlogic.framework.restful.annotation.Param;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import neatlogic.framework.process.auth.PRIORITY_MODIFY;
+import neatlogic.module.process.dao.mapper.catalog.PriorityMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 
 @Service
 @Transactional
@@ -25,7 +24,7 @@ import neatlogic.framework.process.auth.PRIORITY_MODIFY;
 @AuthAction(action = PRIORITY_MODIFY.class)
 public class PriorityMoveApi extends PrivateApiComponentBase {
 	
-	@Autowired
+	@Resource
 	private PriorityMapper priorityMapper;
 
 	@Override

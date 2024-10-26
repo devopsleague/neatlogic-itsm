@@ -31,7 +31,7 @@ public class ProcessStepHandlerListApi extends PrivateApiComponentBase {
 
     @Override
     public String getName() {
-        return "流程组件列表接口";
+        return "流程组件列表";
     }
 
     @Override
@@ -39,8 +39,8 @@ public class ProcessStepHandlerListApi extends PrivateApiComponentBase {
         return null;
     }
 
-    @Output({@Param(name = "Retrun", explode = ProcessStepHandlerVo[].class, desc = "流程组件列表")})
-    @Description(desc = "流程组件列表接口")
+    @Output({@Param(name = "Return", explode = ProcessStepHandlerVo[].class, desc = "流程组件列表")})
+    @Description(desc = "流程组件列表")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
         List<ProcessStepHandlerVo> processStepHandlerVoList = ProcessStepHandlerFactory.getActiveProcessStepHandler();

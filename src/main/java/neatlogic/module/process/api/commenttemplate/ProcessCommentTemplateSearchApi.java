@@ -9,7 +9,6 @@ import neatlogic.framework.common.constvalue.UserType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.auth.PROCESS_COMMENT_TEMPLATE_MODIFY;
-import neatlogic.module.process.dao.mapper.process.ProcessCommentTemplateMapper;
 import neatlogic.framework.process.dto.ProcessCommentTemplateSearchVo;
 import neatlogic.framework.process.dto.ProcessCommentTemplateVo;
 import neatlogic.framework.restful.annotation.Input;
@@ -19,18 +18,20 @@ import neatlogic.framework.restful.annotation.Param;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
 import neatlogic.framework.util.TableResultUtil;
+import neatlogic.module.process.dao.mapper.process.ProcessCommentTemplateMapper;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessCommentTemplateSearchApi extends PrivateApiComponentBase {
 
-    @Autowired
+    @Resource
     private ProcessCommentTemplateMapper commentTemplateMapper;
 
 
@@ -77,17 +78,17 @@ public class ProcessCommentTemplateSearchApi extends PrivateApiComponentBase {
         }
         int rowNum = commentTemplateMapper.searchCommentTemplateCount(searchVo);
         if (rowNum == 0) {
-            return TableResultUtil.getResult(new ArrayList(), searchVo);
+            return TableResultUtil.getResult(new ArrayList<>(), searchVo);
         }
         searchVo.setRowNum(rowNum);
         List<ProcessCommentTemplateVo> tbodyList = commentTemplateMapper.searchCommentTemplateList(searchVo);
-        if(CollectionUtils.isNotEmpty(tbodyList)){
+        if (CollectionUtils.isNotEmpty(tbodyList)) {
             //有系统模版管理权限才能编辑系统模版
             for (ProcessCommentTemplateVo processCommentTemplateVo : tbodyList) {
-                if(ProcessCommentTemplateVo.TempalteType.SYSTEM.getValue().equals(processCommentTemplateVo.getType())){
+                if (ProcessCommentTemplateVo.TempalteType.SYSTEM.getValue().equals(processCommentTemplateVo.getType())) {
                     if (AuthActionChecker.check(PROCESS_COMMENT_TEMPLATE_MODIFY.class.getSimpleName())) {
                         processCommentTemplateVo.setIsEditable(1);
-                    } else{
+                    } else {
                         processCommentTemplateVo.setIsEditable(0);
                     }
                 } else if (ProcessCommentTemplateVo.TempalteType.CUSTOM.getValue().equals(processCommentTemplateVo.getType())) {

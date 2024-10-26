@@ -1,33 +1,31 @@
 package neatlogic.module.process.api.process;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
+import neatlogic.framework.common.util.PageUtil;
+import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.dto.ProcessVo;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.process.ProcessMapper;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
 
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.common.dto.BasePageVo;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import com.alibaba.fastjson.JSONArray;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.common.util.PageUtil;
-import neatlogic.framework.process.dto.ProcessVo;
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessSearchApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 	
 	@Override

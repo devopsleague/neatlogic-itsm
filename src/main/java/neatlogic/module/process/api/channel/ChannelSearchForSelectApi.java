@@ -1,42 +1,36 @@
 package neatlogic.module.process.api.channel;
 
-import java.util.Iterator;
-import java.util.List;
-
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Objects;
-
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.ValueTextVo;
 import neatlogic.framework.common.util.PageUtil;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.dto.ChannelVo;
+import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.Description;
-import neatlogic.framework.restful.annotation.Input;
-import neatlogic.framework.restful.annotation.OperationType;
-import neatlogic.framework.restful.annotation.Output;
-import neatlogic.framework.restful.annotation.Param;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.service.CatalogService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ChannelSearchForSelectApi extends PrivateApiComponentBase {
 	
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 	
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 	
 	@Override
@@ -77,7 +71,7 @@ public class ChannelSearchForSelectApi extends PrivateApiComponentBase {
 	@Override
 	public Object myDoService(JSONObject jsonObj) throws Exception {
 		JSONObject resultObj = new JSONObject();
-		ChannelVo channelVo = JSONObject.toJavaObject(jsonObj, ChannelVo.class);
+		ChannelVo channelVo = JSON.toJavaObject(jsonObj, ChannelVo.class);
 		channelVo.setUserUuid(UserContext.get().getUserUuid(true));
 		Integer isAuthenticate = jsonObj.getInteger("isAuthenticate");
 		if(Objects.equal(isAuthenticate, 1)) {
@@ -90,13 +84,7 @@ public class ChannelSearchForSelectApi extends PrivateApiComponentBase {
         if(CollectionUtils.isNotEmpty(defaultValue)) {
             List<String> authorizationUuidList = channelVo.getAuthorizedUuidList();
             if(CollectionUtils.isNotEmpty(authorizationUuidList)) {
-                Iterator<String> authUuidIterator = authorizationUuidList.iterator();
-                while(authUuidIterator.hasNext()) {
-                    String uuid = authUuidIterator.next();
-                    if(!defaultValue.contains(uuid)) {
-                        authUuidIterator.remove();
-                    }
-                }
+                authorizationUuidList.removeIf(uuid -> !defaultValue.contains(uuid));
             }else {
                 channelVo.setAuthorizedUuidList(defaultValue.toJavaList(String.class));
             }
@@ -106,13 +94,7 @@ public class ChannelSearchForSelectApi extends PrivateApiComponentBase {
         if (CollectionUtils.isNotEmpty(uuidList)) {
 			List<String> authorizationUuidList = channelVo.getAuthorizedUuidList();
 			if(CollectionUtils.isNotEmpty(authorizationUuidList)) {
-				Iterator<String> authUuidIterator = authorizationUuidList.iterator();
-				while(authUuidIterator.hasNext()) {
-					String uuid = authUuidIterator.next();
-					if(!uuidList.contains(uuid)) {
-						authUuidIterator.remove();
-					}
-				}
+                authorizationUuidList.removeIf(uuid -> !uuidList.contains(uuid));
 			}else {
 				channelVo.setAuthorizedUuidList(uuidList);
 			}

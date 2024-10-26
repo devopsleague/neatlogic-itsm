@@ -16,9 +16,9 @@ import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
 import neatlogic.module.process.dao.mapper.process.ProcessMapper;
 import neatlogic.module.process.service.CatalogService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 @Service
@@ -26,16 +26,16 @@ import java.util.List;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessReferenceListApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 
-	@Autowired
+	@Resource
 	private ChannelTypeMapper channelTypeMapper;
 
 	@Override

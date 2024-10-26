@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.dto.ConditionParamVo;
-import neatlogic.framework.form.dao.mapper.FormMapper;
 import neatlogic.framework.notify.core.INotifyPolicyHandler;
 import neatlogic.framework.notify.core.NotifyPolicyHandlerFactory;
 import neatlogic.framework.notify.exception.NotifyPolicyHandlerNotFoundException;
@@ -12,7 +11,6 @@ import neatlogic.framework.process.auth.PROCESS;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,8 +21,6 @@ import java.util.List;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessNotifyPolicyParamList extends PrivateApiComponentBase {
 
-    @Autowired
-    private FormMapper formMapper;
 
     @Override
     public String getToken() {

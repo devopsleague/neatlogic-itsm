@@ -1,34 +1,32 @@
 package neatlogic.module.process.api.channeltype;
 
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-
+import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSerialNumberMapper;
+import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.dto.ChannelTypeVo;
 import neatlogic.framework.process.dto.ProcessTaskSerialNumberPolicyVo;
 import neatlogic.framework.process.exception.channeltype.ChannelTypeNotFoundException;
 import neatlogic.framework.process.processtaskserialnumberpolicy.core.IProcessTaskSerialNumberPolicyHandler;
 import neatlogic.framework.process.processtaskserialnumberpolicy.core.ProcessTaskSerialNumberPolicyHandlerFactory;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSerialNumberMapper;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 @Service
 @OperationType(type = OperationTypeEnum.SEARCH)
 @AuthAction(action = PROCESS_BASE.class)
 public class ChannelTypeGetApi extends PrivateApiComponentBase {
 
-    @Autowired
+    @Resource
     private ChannelTypeMapper channelTypeMapper;
-    @Autowired
+    @Resource
     private ProcessTaskSerialNumberMapper processTaskSerialNumberMapper;
 
     @Override
@@ -38,7 +36,7 @@ public class ChannelTypeGetApi extends PrivateApiComponentBase {
 
     @Override
     public String getName() {
-        return "服务类型信息获取接口";
+        return "服务类型信息获取";
     }
 
     @Override
@@ -48,7 +46,7 @@ public class ChannelTypeGetApi extends PrivateApiComponentBase {
 
     @Input({@Param(name = "uuid", type = ApiParamType.STRING, isRequired = true, desc = "服务类型uuid")})
     @Output({@Param(name = "Return", explode = ChannelTypeVo.class, desc = "服务类型信息")})
-    @Description(desc = "服务类型信息获取接口")
+    @Description(desc = "服务类型信息获取")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
         String uuid = jsonObj.getString("uuid");
@@ -57,13 +55,13 @@ public class ChannelTypeGetApi extends PrivateApiComponentBase {
             throw new ChannelTypeNotFoundException(uuid);
         }
         ProcessTaskSerialNumberPolicyVo processTaskSerialNumberPolicyVo =
-            processTaskSerialNumberMapper.getProcessTaskSerialNumberPolicyByChannelTypeUuid(uuid);
+                processTaskSerialNumberMapper.getProcessTaskSerialNumberPolicyByChannelTypeUuid(uuid);
         if (processTaskSerialNumberPolicyVo != null) {
             channelType.setHandler(processTaskSerialNumberPolicyVo.getHandler());
-            JSONObject resultObj = (JSONObject)JSON.toJSON(channelType);
+            JSONObject resultObj = (JSONObject) JSON.toJSON(channelType);
             IProcessTaskSerialNumberPolicyHandler handler =
-                ProcessTaskSerialNumberPolicyHandlerFactory.getHandler(processTaskSerialNumberPolicyVo.getHandler());
-            if(handler != null) {
+                    ProcessTaskSerialNumberPolicyHandlerFactory.getHandler(processTaskSerialNumberPolicyVo.getHandler());
+            if (handler != null) {
                 JSONObject config = handler.makeupConfig(processTaskSerialNumberPolicyVo.getConfig());
                 resultObj.putAll(config);
             }

@@ -1,34 +1,31 @@
 package neatlogic.module.process.api.channeltype;
 
-import neatlogic.framework.dto.FieldValidResultVo;
-import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
-import neatlogic.framework.process.exception.channeltype.ChannelTypeHasReferenceException;
-import neatlogic.framework.process.exception.processtaskserialnumberpolicy.ProcessTaskSerialNumberUpdateInProcessException;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.IValid;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import neatlogic.framework.process.auth.CHANNELTYPE_MODIFY;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
-
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSerialNumberMapper;
+import neatlogic.framework.dto.FieldValidResultVo;
+import neatlogic.framework.process.auth.CHANNELTYPE_MODIFY;
 import neatlogic.framework.process.dto.ChannelTypeVo;
 import neatlogic.framework.process.dto.ProcessTaskSerialNumberPolicyVo;
+import neatlogic.framework.process.exception.channeltype.ChannelTypeHasReferenceException;
 import neatlogic.framework.process.exception.channeltype.ChannelTypeNameRepeatException;
 import neatlogic.framework.process.exception.channeltype.ChannelTypeNotFoundException;
 import neatlogic.framework.process.exception.processtaskserialnumberpolicy.ProcessTaskSerialNumberPolicyHandlerNotFoundException;
+import neatlogic.framework.process.exception.processtaskserialnumberpolicy.ProcessTaskSerialNumberUpdateInProcessException;
 import neatlogic.framework.process.processtaskserialnumberpolicy.core.IProcessTaskSerialNumberPolicyHandler;
 import neatlogic.framework.process.processtaskserialnumberpolicy.core.ProcessTaskSerialNumberPolicyHandlerFactory;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.IValid;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSerialNumberMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.util.Objects;
 
 @Service
@@ -37,9 +34,9 @@ import java.util.Objects;
 @AuthAction(action = CHANNELTYPE_MODIFY.class)
 public class ChannelTypeSaveApi extends PrivateApiComponentBase {
 
-    @Autowired
+    @Resource
     private ChannelTypeMapper channelTypeMapper;
-    @Autowired
+    @Resource
     private ProcessTaskSerialNumberMapper processTaskSerialNumberMapper;
 
     @Override
@@ -49,7 +46,7 @@ public class ChannelTypeSaveApi extends PrivateApiComponentBase {
 
     @Override
     public String getName() {
-        return "服务类型信息保存接口";
+        return "服务类型信息保存";
     }
 
     @Override
@@ -58,17 +55,18 @@ public class ChannelTypeSaveApi extends PrivateApiComponentBase {
     }
 
     @Input({@Param(name = "uuid", type = ApiParamType.STRING, desc = "服务类型uuid"),
-        @Param(name = "name", type = ApiParamType.STRING, isRequired = true, desc = "名称"),
-        @Param(name = "isActive", type = ApiParamType.ENUM, rule = "0,1", isRequired = true, desc = "状态"),
-        @Param(name = "prefix", type = ApiParamType.STRING, isRequired = true, desc = "工单号前缀"),
-        @Param(name = "handler", type = ApiParamType.STRING, isRequired = true, desc = "工单号策略"),
-        @Param(name = "color", type = ApiParamType.STRING, isRequired = true, desc = "颜色"),
-        @Param(name = "description", type = ApiParamType.STRING, xss = true, desc = "描述")})
+            @Param(name = "name", type = ApiParamType.STRING, isRequired = true, desc = "名称"),
+            @Param(name = "isActive", type = ApiParamType.ENUM, rule = "0,1", isRequired = true, desc = "状态"),
+            @Param(name = "prefix", type = ApiParamType.STRING, isRequired = true, desc = "工单号前缀"),
+            @Param(name = "handler", type = ApiParamType.STRING, isRequired = true, desc = "工单号策略"),
+            @Param(name = "color", type = ApiParamType.STRING, isRequired = true, desc = "颜色"),
+            @Param(name = "description", type = ApiParamType.STRING, xss = true, desc = "描述")})
     @Output({@Param(name = "Return", type = ApiParamType.STRING, desc = "服务类型uuid")})
-    @Description(desc = "服务类型信息保存接口")
+    @Description(desc = "服务类型信息保存")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
-        ChannelTypeVo channelTypeVo = JSON.parseObject(jsonObj.toJSONString(), new TypeReference<ChannelTypeVo>() {});
+        ChannelTypeVo channelTypeVo = JSON.parseObject(jsonObj.toJSONString(), new TypeReference<ChannelTypeVo>() {
+        });
         if (channelTypeMapper.checkChannelTypeNameIsRepeat(channelTypeVo) > 0) {
             throw new ChannelTypeNameRepeatException(channelTypeVo.getName());
         }
@@ -85,7 +83,7 @@ public class ChannelTypeSaveApi extends PrivateApiComponentBase {
                 throw new ChannelTypeNotFoundException(uuid);
             }
             if (channelTypeMapper.checkChannelTypeHasReference(uuid) > 0
-                && Objects.equals(channelTypeVo.getIsActive(), 0)) {
+                    && Objects.equals(channelTypeVo.getIsActive(), 0)) {
                 throw new ChannelTypeHasReferenceException(channelTypeVo.getName(), "禁用");
             }
             channelTypeMapper.updateChannelTypeByUuid(channelTypeVo);
@@ -94,7 +92,7 @@ public class ChannelTypeSaveApi extends PrivateApiComponentBase {
         }
 
         IProcessTaskSerialNumberPolicyHandler handler =
-            ProcessTaskSerialNumberPolicyHandlerFactory.getHandler(channelTypeVo.getHandler());
+                ProcessTaskSerialNumberPolicyHandlerFactory.getHandler(channelTypeVo.getHandler());
         if (handler == null) {
             throw new ProcessTaskSerialNumberPolicyHandlerNotFoundException(channelTypeVo.getHandler());
         }

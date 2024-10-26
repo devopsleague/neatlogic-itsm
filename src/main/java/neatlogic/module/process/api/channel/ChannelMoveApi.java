@@ -21,8 +21,6 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.lrcode.constvalue.MoveType;
 import neatlogic.framework.lrcode.exception.MoveTargetNodeIllegalException;
 import neatlogic.framework.process.auth.CATALOG_MODIFY;
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.framework.process.dto.CatalogVo;
 import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.process.exception.catalog.CatalogNotFoundException;
@@ -34,6 +32,8 @@ import neatlogic.framework.restful.annotation.OperationType;
 import neatlogic.framework.restful.annotation.Param;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +58,7 @@ public class ChannelMoveApi extends PrivateApiComponentBase {
 
     @Override
     public String getName() {
-        return "服务通道移动位置接口";
+        return "服务通道移动位置";
     }
 
     @Override
@@ -71,7 +71,7 @@ public class ChannelMoveApi extends PrivateApiComponentBase {
             @Param(name = "targetUuid", type = ApiParamType.STRING, isRequired = true, desc = "目标节点uuid"),
             @Param(name = "moveType", type = ApiParamType.ENUM, rule = "inner,prev,next", isRequired = true, desc = "移动类型")
     })
-    @Description(desc = "服务通道移动位置接口")
+    @Description(desc = "服务通道移动位置")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
         String uuid = jsonObj.getString("uuid");

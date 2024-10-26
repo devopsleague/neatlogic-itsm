@@ -1,5 +1,7 @@
 package neatlogic.module.process.api.catalog;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
@@ -8,17 +10,15 @@ import neatlogic.framework.common.util.PageUtil;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.CatalogChannelAuthorityAction;
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.framework.process.dto.CatalogVo;
 import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.process.exception.catalog.CatalogNotFoundException;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.service.CatalogService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
-public class CalalogBreadcrumbSearchApi extends PrivateApiComponentBase {
+public class CatalogBreadcrumbSearchApi extends PrivateApiComponentBase {
 
     @Resource
     private CatalogService catalogService;
@@ -157,7 +157,7 @@ public class CalalogBreadcrumbSearchApi extends PrivateApiComponentBase {
                 int fromIndex = basePageVo.getStartNum();
                 if (fromIndex < rowNum) {
                     int toIndex = fromIndex + basePageVo.getPageSize();
-                    toIndex = toIndex > rowNum ? rowNum : toIndex;
+                    toIndex = Math.min(toIndex, rowNum);
                     resultObj.put("breadcrumbList", calalogBreadcrumbList.subList(fromIndex, toIndex));
                 }
             } else {

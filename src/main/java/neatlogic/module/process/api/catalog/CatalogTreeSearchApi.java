@@ -1,40 +1,38 @@
 package neatlogic.module.process.api.catalog;
 
-import java.util.*;
-
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.CatalogChannelAuthorityAction;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import neatlogic.module.process.service.CatalogService;
-import org.apache.commons.collections4.CollectionUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.framework.process.dto.CatalogVo;
 import neatlogic.framework.process.exception.catalog.CatalogNotFoundException;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.module.process.service.CatalogService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class CatalogTreeSearchApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 	
-	@Autowired
+	@Resource
 	private CatalogMapper catalogMapper;
 	
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 
 	@Override

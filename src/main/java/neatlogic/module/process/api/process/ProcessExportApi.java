@@ -1,5 +1,6 @@
 package neatlogic.module.process.api.process;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
@@ -12,11 +13,10 @@ import neatlogic.framework.restful.annotation.Param;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateBinaryStreamApiComponentBase;
 import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.io.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -30,7 +30,7 @@ import java.nio.charset.StandardCharsets;
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ProcessExportApi extends PrivateBinaryStreamApiComponentBase {
 	
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 	
 	@Override
@@ -40,7 +40,7 @@ public class ProcessExportApi extends PrivateBinaryStreamApiComponentBase {
 
 	@Override
 	public String getName() {
-		return "流程导出接口";
+		return "流程导出";
 	}
 
 	@Override
@@ -51,7 +51,7 @@ public class ProcessExportApi extends PrivateBinaryStreamApiComponentBase {
 	@Input({
 		@Param(name = "uuid", type = ApiParamType.STRING, isRequired = true, desc = "流程uuid")
 	})
-	@Description(desc = "流程导出接口")
+	@Description(desc = "流程导出")
 	@Override
 	public Object myDoService(JSONObject paramObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		String uuid = paramObj.getString("uuid");

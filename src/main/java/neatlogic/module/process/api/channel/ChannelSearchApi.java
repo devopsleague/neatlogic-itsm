@@ -1,50 +1,47 @@
 package neatlogic.module.process.api.channel;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.common.dto.BasePageVo;
-import neatlogic.framework.dto.AuthenticationInfoVo;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.CatalogChannelAuthorityAction;
-import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.google.common.base.Objects;
-
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.common.util.PageUtil;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.framework.dto.AuthenticationInfoVo;
+import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.constvalue.CatalogChannelAuthorityAction;
 import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.process.exception.channel.ChannelNotFoundException;
 import neatlogic.framework.process.exception.channeltype.ChannelTypeRelationNotFoundException;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
 import neatlogic.module.process.service.CatalogService;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ChannelSearchApi extends PrivateApiComponentBase {
 	
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 
-	@Autowired
+	@Resource
 	private ChannelTypeMapper channelTypeMapper;
 
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 
 	@Override
@@ -84,7 +81,7 @@ public class ChannelSearchApi extends PrivateApiComponentBase {
 		JSONObject resultObj = new JSONObject();
 		resultObj.put("channelList", new ArrayList<>());
 		ChannelVo channelVo = JSON.parseObject(jsonObj.toJSONString(), new TypeReference<ChannelVo>() {});
-		/** 查询所有收藏的服务时，parentUuid设为空即可 **/
+		/* 查询所有收藏的服务时，parentUuid设为空即可 **/
 		if(channelVo.getIsFavorite() != null && channelVo.getIsFavorite() == 1 && "0".equals(channelVo.getParentUuid())){
 			channelVo.setParentUuid(null);
 		}

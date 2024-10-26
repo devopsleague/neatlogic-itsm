@@ -1,42 +1,39 @@
 package neatlogic.module.process.api.process;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
+import com.alibaba.fastjson.JSONObject;
+import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.process.auth.PROCESS_MODIFY;
+import neatlogic.framework.process.dto.ProcessVo;
+import neatlogic.framework.process.exception.process.ProcessImportException;
+import neatlogic.framework.restful.annotation.Description;
+import neatlogic.framework.restful.annotation.OperationType;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateBinaryStreamApiComponentBase;
 import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+import neatlogic.module.process.service.ProcessService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.asynchronization.threadlocal.UserContext;
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.process.dto.ProcessVo;
-import neatlogic.framework.process.exception.process.ProcessImportException;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.Description;
-import neatlogic.framework.restful.annotation.OperationType;
-import neatlogic.framework.restful.core.privateapi.PrivateBinaryStreamApiComponentBase;
-import neatlogic.framework.process.auth.PROCESS_MODIFY;
-import neatlogic.module.process.service.ProcessService;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.util.Map;
+import java.util.Map.Entry;
 @Service
 @Transactional
 @OperationType(type = OperationTypeEnum.CREATE)
 @AuthAction(action = PROCESS_MODIFY.class)
 public class ProcessImportApi extends PrivateBinaryStreamApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 	
-	@Autowired
+	@Resource
 	private ProcessService processService;
 	
 	@Override
@@ -46,7 +43,7 @@ public class ProcessImportApi extends PrivateBinaryStreamApiComponentBase {
 
 	@Override
 	public String getName() {
-		return "流程导入接口";
+		return "导入流程";
 	}
 
 	@Override
@@ -54,7 +51,7 @@ public class ProcessImportApi extends PrivateBinaryStreamApiComponentBase {
 		return null;
 	}
 
-	@Description(desc = "流程导入接口")
+	@Description(desc = "导入流程")
 	@Override
 	public Object myDoService(JSONObject paramObj, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;

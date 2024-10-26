@@ -1,25 +1,24 @@
 package neatlogic.module.process.api.catalog;
 
-import java.util.*;
-
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.process.dto.CatalogVo;
+import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import neatlogic.module.process.service.CatalogService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
-import neatlogic.framework.process.dto.CatalogVo;
-import neatlogic.framework.process.dto.ChannelVo;
-import neatlogic.module.process.service.CatalogService;
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
@@ -27,16 +26,16 @@ import neatlogic.module.process.service.CatalogService;
 @Transactional
 public class CatalogChannelTreeSearchApi extends PrivateApiComponentBase {
 
-    @Autowired
+    @Resource
     private CatalogService catalogService;
 
-    @Autowired
+    @Resource
     private CatalogMapper catalogMapper;
 
-    @Autowired
+    @Resource
     private ChannelMapper channelMapper;
 
-    @Autowired
+    @Resource
     private ProcessTaskMapper processTaskMapper;
 
     @Override

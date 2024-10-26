@@ -11,9 +11,11 @@ import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
 import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
 
 @Service
 @Transactional
@@ -21,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @AuthAction(action = PROCESS_MODIFY.class)
 public class ProcessDraftSaveApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private ProcessMapper processMapper;
 
 	@Override

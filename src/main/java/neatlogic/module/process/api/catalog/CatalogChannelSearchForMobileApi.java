@@ -1,44 +1,38 @@
 package neatlogic.module.process.api.catalog;
 
-import java.util.List;
-
-import neatlogic.framework.auth.core.AuthAction;
-import neatlogic.framework.process.auth.PROCESS_BASE;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
+import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
-import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.dto.CatalogVo;
 import neatlogic.framework.process.dto.ChannelVo;
 import neatlogic.framework.process.exception.catalog.CatalogNotFoundException;
+import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.Description;
-import neatlogic.framework.restful.annotation.Input;
-import neatlogic.framework.restful.annotation.OperationType;
-import neatlogic.framework.restful.annotation.Output;
-import neatlogic.framework.restful.annotation.Param;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.service.CatalogService;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Service
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class CatalogChannelSearchForMobileApi extends PrivateApiComponentBase {
 
-	@Autowired
+	@Resource
 	private CatalogMapper catalogMapper;
 
-	@Autowired
+	@Resource
 	private ChannelMapper channelMapper;
 
-	@Autowired
+	@Resource
 	private CatalogService catalogService;
 
 	@Override
@@ -87,7 +81,7 @@ public class CatalogChannelSearchForMobileApi extends PrivateApiComponentBase {
 		    listArray = catalogService.getCatalogChannelByCatalogUuid(catalog,true).getJSONArray("list");
 		}
 		resultObj.put("list", listArray);
-		/** 获取对应目录下的收藏服务 **/
+		/* 获取对应目录下的收藏服务 **/
 		paramChannel.setIsFavorite(1);
 		paramChannel.setUserUuid(UserContext.get().getUserUuid(true));
 		//查出当前用户已授权的服务
