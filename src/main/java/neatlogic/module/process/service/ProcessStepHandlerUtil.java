@@ -1056,14 +1056,18 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
         for (FormAttributeVo formAttributeVo : mainSceneFormAttributeList) {
             String attributeUuid = formAttributeVo.getUuid();
             if (formAttributeDataMap.containsKey(attributeUuid)) {
+                ProcessTaskFormAttributeDataVo oldProcessTaskFormAttributeData = oldProcessTaskFormAttributeDataMap.get(attributeUuid);
                 Object data = formAttributeDataMap.get(attributeUuid);
                 IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
                 if (formAttributeDataConversionHandler != null) {
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig());
+                    Object oldData = null;
+                    if (oldProcessTaskFormAttributeData != null) {
+                        oldData = oldProcessTaskFormAttributeData.getDataObj();
+                    }
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
                 }
 
                 ProcessTaskFormAttributeDataVo formAttributeDataVo = new ProcessTaskFormAttributeDataVo();
-                ProcessTaskFormAttributeDataVo oldProcessTaskFormAttributeData = oldProcessTaskFormAttributeDataMap.get(attributeUuid);
                 if (oldProcessTaskFormAttributeData != null) {
                     formAttributeDataVo.setId(oldProcessTaskFormAttributeData.getId());
                 }
@@ -1136,14 +1140,18 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
                 if (formAttributeVo == null) {
                     continue;
                 }
+                AttributeDataVo oldAttributeDataVo = oldExtendAttributeDataMap.get(formAttributeVo.getUuid());
                 Object data = formExtendAttributeDataObj.get("dataList");
                 IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
                 if (formAttributeDataConversionHandler != null) {
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig());
+                    Object oldData = null;
+                    if (oldAttributeDataVo != null) {
+                        oldData = oldAttributeDataVo.getDataObj();
+                    }
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
                 }
 
                 ProcessTaskFormAttributeDataVo processTaskExtendFormAttributeDataVo = new ProcessTaskFormAttributeDataVo();
-                AttributeDataVo oldAttributeDataVo = oldExtendAttributeDataMap.get(formAttributeVo.getUuid());
                 if (oldAttributeDataVo != null) {
                     processTaskExtendFormAttributeDataVo.setId(oldAttributeDataVo.getId());
                 }
