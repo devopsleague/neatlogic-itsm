@@ -1374,12 +1374,21 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
         List<ProcessTaskStepVo> stepVoList =
                 processTaskMapper.getProcessTaskStepBaseInfoByProcessTaskId(processTaskVo.getId());
         for (ProcessTaskStepVo stepVo : stepVoList) {
-            /* 找到所有已激活步骤 **/
-            if (stepVo.getIsActive().equals(1)) {
-                if (checkOperationAuthIsConfigured(stepVo, processTaskVo.getOwner(), processTaskVo.getReporter(),
-                        ProcessTaskOperationType.STEP_TRANSFER, userUuid)) {
-                    resultSet.add(stepVo);
-                }
+            // 步骤状态为已激活的才能转交，否则跳过；
+            if (!Objects.equals(stepVo.getIsActive(), 1)) {
+                continue;
+            }
+            //9.判断步骤状态是否是“已完成”，如果是，则跳过；
+            //10.判断步骤状态是否是“异常”，如果是，则跳过；
+            //11.判断步骤状态是否是“已挂起”，如果是，则跳过；
+            if (checkProcessTaskStepStatus(stepVo.getStatus(), ProcessTaskStepStatus.SUCCEED,
+                    ProcessTaskStepStatus.FAILED,
+                    ProcessTaskStepStatus.HANG) != null) {
+                continue;
+            }
+            if (checkOperationAuthIsConfigured(stepVo, processTaskVo.getOwner(), processTaskVo.getReporter(),
+                    ProcessTaskOperationType.STEP_TRANSFER, userUuid)) {
+                resultSet.add(stepVo);
             }
         }
         return resultSet;
@@ -3255,5 +3264,17 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
             }
         }
         return data;
+    }
+
+    @Override
+    public boolean checkStepIsInvalid(Long processTaskStepId) {
+        List<ProcessTaskStepRelVo> processTaskStepRelList = processTaskMapper.getProcessTaskStepRelByFromId(processTaskStepId);
+        for (ProcessTaskStepRelVo processTaskStepRelVo : processTaskStepRelList) {
+            if (Objects.equals(processTaskStepRelVo.getType(), ProcessFlowDirection.FORWARD.getValue())
+                    && !Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

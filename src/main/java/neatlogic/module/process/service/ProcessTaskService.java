@@ -519,4 +519,10 @@ public interface ProcessTaskService {
      * @return
      */
     JSONObject getProcessTaskStepStagingData(Long processTaskId, Long processTaskStepId);
+
+    /**
+     * 检查步骤是否是无效的，如果一个步骤A前面有两条路径，一个步骤B，一个是步骤C，如果选择流转到步骤B，且步骤C不会再被激活，那么步骤C就是无效的步骤
+     * @return 如果是无效步骤返回true，否则返回false
+     */
+    boolean checkStepIsInvalid(Long processTaskStepId);
 }
