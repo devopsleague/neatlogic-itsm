@@ -1064,7 +1064,7 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
                     if (oldProcessTaskFormAttributeData != null) {
                         oldData = oldProcessTaskFormAttributeData.getDataObj();
                     }
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);// aa
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
                 }
 
                 ProcessTaskFormAttributeDataVo formAttributeDataVo = new ProcessTaskFormAttributeDataVo();
@@ -1148,7 +1148,7 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
                     if (oldAttributeDataVo != null) {
                         oldData = oldAttributeDataVo.getDataObj();
                     }
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);// aa
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
                 }
 
                 ProcessTaskFormAttributeDataVo processTaskExtendFormAttributeDataVo = new ProcessTaskFormAttributeDataVo();
