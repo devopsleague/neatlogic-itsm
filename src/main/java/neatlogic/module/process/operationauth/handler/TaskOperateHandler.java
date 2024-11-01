@@ -736,11 +736,21 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                 //8.判断当前用户是否有工单某个步骤的转交权限，如果没有，则提示“工单里没有您可以转交的步骤”；
                 boolean flag = false;
                 for (ProcessTaskStepVo processTaskStep : processTaskVo.getStepList()) {
-                    if (processTaskStep.getIsActive().intValue() == 1) {
-                        flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskOperationType.STEP_TRANSFER, userUuid);
-                        if (flag) {
-                            return true;
-                        }
+                    // 步骤状态为已激活的才能转交，否则跳过；
+                    if (!Objects.equals(processTaskStep.getIsActive(), 1)) {
+                        continue;
+                    }
+                    //9.判断步骤状态是否是“已完成”，如果是，则跳过；
+                    //10.判断步骤状态是否是“异常”，如果是，则跳过；
+                    //11.判断步骤状态是否是“已挂起”，如果是，则跳过；
+                    if (processTaskService.checkProcessTaskStepStatus(processTaskStep.getStatus(), ProcessTaskStepStatus.SUCCEED,
+                            ProcessTaskStepStatus.FAILED,
+                            ProcessTaskStepStatus.HANG) != null) {
+                        continue;
+                    }
+                    flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskOperationType.STEP_TRANSFER, userUuid);
+                    if (flag) {
+                        return true;
                     }
                 }
                 if (!flag) {

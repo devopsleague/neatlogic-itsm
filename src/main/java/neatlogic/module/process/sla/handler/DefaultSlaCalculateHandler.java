@@ -119,7 +119,8 @@ public class DefaultSlaCalculateHandler extends SlaCalculateHandlerBase {
      */
     private static List<Map<String, Long>> timeAuditListToTimePeriodList(List<ProcessTaskStepTimeAuditVo> timeAuditList, long currentTimeMillis) {
         List<Map<String, Long>> timeList = new ArrayList<>();
-        for (ProcessTaskStepTimeAuditVo auditVo : timeAuditList) {
+        for (int i = 0; i < timeAuditList.size(); i++) {
+            ProcessTaskStepTimeAuditVo auditVo = timeAuditList.get(i);
             Long startTime = null;
             Long endTime = null;
             if (auditVo.getActiveTimeLong() != null) {
@@ -147,9 +148,11 @@ public class DefaultSlaCalculateHandler extends SlaCalculateHandlerBase {
                 Map<String, Long> stimeMap = new HashMap<>();
                 stimeMap.put("s", startTime);
                 timeList.add(stimeMap);
-                Map<String, Long> etimeMap = new HashMap<>();
-                etimeMap.put("e", currentTimeMillis);
-                timeList.add(etimeMap);
+                if (i == timeAuditList.size() - 1) {
+                    Map<String, Long> etimeMap = new HashMap<>();
+                    etimeMap.put("e", currentTimeMillis);
+                    timeList.add(etimeMap);
+                }
             }
         }
         timeList.sort((o1, o2) -> {
@@ -171,7 +174,7 @@ public class DefaultSlaCalculateHandler extends SlaCalculateHandlerBase {
             if (s != null) {
                 timeStack.push(s);
             } else if (e != null) {
-                if (!timeStack.isEmpty()) {
+                while (!timeStack.isEmpty()) {
                     Long currentStartTimeLong = timeStack.pop();
                     if (timeStack.isEmpty()) {// 栈被清空时计算时间段
                         Map<String, Long> newTimeMap = new HashMap<>();

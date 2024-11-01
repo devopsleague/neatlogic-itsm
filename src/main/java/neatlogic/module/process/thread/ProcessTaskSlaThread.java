@@ -15,34 +15,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.module.process.thread;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONPath;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadlocal.ConditionParamContext;
 import neatlogic.framework.asynchronization.threadlocal.TenantContext;
 import neatlogic.framework.dto.condition.ConditionConfigVo;
 import neatlogic.framework.process.condition.core.ProcessTaskConditionFactory;
 import neatlogic.framework.process.constvalue.ConditionProcessTaskOptions;
-import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.SlaStatus;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSlaMapper;
+import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.sla.SlaCalculateHandlerNotFoundException;
 import neatlogic.framework.process.sla.core.ISlaCalculateHandler;
 import neatlogic.framework.process.sla.core.SlaCalculateHandlerFactory;
-import neatlogic.framework.process.dto.*;
-import neatlogic.module.process.schedule.plugin.ProcessTaskSlaNotifyJob;
-import neatlogic.module.process.schedule.plugin.ProcessTaskSlaTransferJob;
-import neatlogic.framework.util.WorkTimeUtil;
 import neatlogic.framework.scheduler.core.IJob;
 import neatlogic.framework.scheduler.core.SchedulerManager;
 import neatlogic.framework.scheduler.dto.JobObject;
 import neatlogic.framework.scheduler.exception.ScheduleHandlerNotFoundException;
 import neatlogic.framework.transaction.util.TransactionUtil;
 import neatlogic.framework.util.RunScriptUtil;
+import neatlogic.framework.util.WorkTimeUtil;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSlaMapper;
+import neatlogic.module.process.schedule.plugin.ProcessTaskSlaNotifyJob;
+import neatlogic.module.process.schedule.plugin.ProcessTaskSlaTransferJob;
+import neatlogic.module.process.service.ProcessTaskService;
 import neatlogic.module.process.sla.handler.DefaultSlaCalculateHandler;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONPath;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -64,12 +64,12 @@ public class ProcessTaskSlaThread extends NeatLogicThread {
     private static TransactionUtil transactionUtil;
 
     private static SchedulerManager schedulerManager;
-//    private static ProcessTaskService processTaskService;
+    private static ProcessTaskService processTaskService;
 
-//    @Resource
-//    public void setProcessTaskService(ProcessTaskService _processTaskService) {
-//        processTaskService = _processTaskService;
-//    }
+    @Resource
+    public void setProcessTaskService(ProcessTaskService _processTaskService) {
+        processTaskService = _processTaskService;
+    }
 
     @Resource
     public void setProcessTaskMapper(ProcessTaskMapper _processTaskMapper) {
@@ -444,20 +444,28 @@ public class ProcessTaskSlaThread extends NeatLogicThread {
                 // 时效关联开始步骤，则一定会被激活
                 isActive = true;
             } else {
-                for (Long processTaskStepId : processTaskStepIdList) {
-                    List<ProcessTaskStepRelVo> processTaskStepRelList = processTaskMapper.getProcessTaskStepRelByToId(processTaskStepId);
-                    for (ProcessTaskStepRelVo processTaskStepRelVo : processTaskStepRelList) {
-                        if (processTaskStepRelVo.getType().equals(ProcessFlowDirection.FORWARD.getValue())) {
-                            if (!Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
-                                isActive = true;
-                                break;
-                            }
-                        }
-                    }
-                    if (isActive) {
-                        break;
+                for (int i = processTaskStepIdList.size() - 1; i >= 0; i--) {
+                    if (processTaskService.checkStepIsInvalid(processTaskStepIdList.get(i))) {
+                        processTaskStepIdList.remove(i);
                     }
                 }
+                if (CollectionUtils.isNotEmpty(processTaskStepIdList)) {
+                    isActive = true;
+                }
+//                for (Long processTaskStepId : processTaskStepIdList) {
+//                    List<ProcessTaskStepRelVo> processTaskStepRelList = processTaskMapper.getProcessTaskStepRelByToId(processTaskStepId);
+//                    for (ProcessTaskStepRelVo processTaskStepRelVo : processTaskStepRelList) {
+//                        if (processTaskStepRelVo.getType().equals(ProcessFlowDirection.FORWARD.getValue())) {
+//                            if (!Objects.equals(processTaskStepRelVo.getIsHit(), -1)) {
+//                                isActive = true;
+//                                break;
+//                            }
+//                        }
+//                    }
+//                    if (isActive) {
+//                        break;
+//                    }
+//                }
             }
             if (isActive) {
                 resultList.add(slaId);
@@ -491,6 +499,11 @@ public class ProcessTaskSlaThread extends NeatLogicThread {
         }
         List<ProcessTaskStepVo> processTaskStepList = new ArrayList<>();
         List<Long> processTaskStepIdList = processTaskSlaMapper.getProcessTaskStepIdListBySlaId(slaId);
+        for (int i = processTaskStepIdList.size() - 1; i >= 0; i--) {
+            if (processTaskService.checkStepIsInvalid(processTaskStepIdList.get(i))) {
+                processTaskStepIdList.remove(i);
+            }
+        }
         if (CollectionUtils.isNotEmpty(processTaskStepIdList)) {
             processTaskStepList = processTaskMapper.getProcessTaskStepListByIdList(processTaskStepIdList);
         }
@@ -617,6 +630,11 @@ public class ProcessTaskSlaThread extends NeatLogicThread {
                 //如果时效状态为已完成，则将耗时数据插入processtask_step_sla_time表；当时效重算时，将该时效的耗时数据从processtask_step_sla_time表删除
                 if (SlaStatus.DONE.name().toLowerCase().equals(slaTimeVo.getStatus())) {
                     List<Long> processTaskStepIdList = processTaskSlaMapper.getProcessTaskStepIdListBySlaId(slaId);
+                    for (int i = processTaskStepIdList.size() - 1; i >= 0; i--) {
+                        if (processTaskService.checkStepIsInvalid(processTaskStepIdList.get(i))) {
+                            processTaskStepIdList.remove(i);
+                        }
+                    }
                     if (CollectionUtils.isNotEmpty(processTaskStepIdList)) {
                         ProcessTaskStepSlaTimeVo processTaskStepSlaTimeVo = new ProcessTaskStepSlaTimeVo();
                         processTaskStepSlaTimeVo.setProcessTaskId(processTaskVo.getId());
