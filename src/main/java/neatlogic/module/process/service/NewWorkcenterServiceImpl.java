@@ -425,7 +425,10 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
 
         // 搜索SerialNumber
         JSONObject titleObj = new JSONObject();
-        List<ProcessTaskVo> processTaskVoList = processTaskMapper.getProcessTaskBySerialNumberList(new ArrayList<>(workcenterVo.getKeywordList()));
+        List<ProcessTaskVo> processTaskVoList = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(workcenterVo.getKeywordList())) {
+            processTaskVoList = processTaskMapper.getProcessTaskBySerialNumberList(workcenterVo.getKeywordList());
+        }
         titleObj.put("dataList", processTaskVoList.stream().map(ProcessTaskVo::getSerialNumber).collect(Collectors.toList()));
         titleObj.put("value", ProcessTaskSqlTable.FieldEnum.SERIAL_NUMBER.getValue());
         titleObj.put("text", ProcessTaskSqlTable.FieldEnum.SERIAL_NUMBER.getText());
@@ -433,7 +436,9 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
 
         // 搜索ID
         titleObj = new JSONObject();
-        processTaskVoList = processTaskMapper.getProcessTaskByIdStrList(new ArrayList<>(workcenterVo.getKeywordList()));
+        if (CollectionUtils.isNotEmpty(workcenterVo.getKeywordList())) {
+            processTaskVoList = processTaskMapper.getProcessTaskByIdStrList(workcenterVo.getKeywordList());
+        }
         titleObj.put("dataList", processTaskVoList.stream().map(ProcessTaskVo::getId).collect(Collectors.toList()));
         titleObj.put("value", ProcessTaskSqlTable.FieldEnum.ID.getValue());
         titleObj.put("text", ProcessTaskSqlTable.FieldEnum.ID.getText());
