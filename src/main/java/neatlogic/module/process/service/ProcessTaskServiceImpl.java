@@ -2615,13 +2615,24 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
           而实际上已经生成工单，只是状态是草稿
          */
         if (Objects.equals(channelVo.getIsActivePriority(), 1)) {
-            String priorityUuid = jsonObj.getString("priorityUuid");
-            if (StringUtils.isBlank(priorityUuid)) {
-                throw new ProcessTaskPriorityIsEmptyException();
-            }
             List<ChannelPriorityVo> channelPriorityList = channelMapper.getChannelPriorityListByChannelUuid(channelUuid);
-            if (channelPriorityList.stream().noneMatch(o -> o.getPriorityUuid().equals(priorityUuid))) {
-                throw new ProcessTaskPriorityNotMatchException();
+            String priorityUuid = jsonObj.getString("priorityUuid");
+            if (StringUtils.isNotBlank(priorityUuid)) {
+                 final String priority = priorityUuid;
+                if (channelPriorityList.stream().noneMatch(o -> o.getPriorityUuid().equals(priority))) {
+                    throw new ProcessTaskPriorityNotMatchException();
+                }
+            } else {
+                for (ChannelPriorityVo channelPriorityVo : channelPriorityList) {
+                    if (Objects.equals(channelPriorityVo.getIsDefault(), 1)) {
+                        priorityUuid = channelPriorityVo.getPriorityUuid();
+                        break;
+                    }
+                }
+                if (StringUtils.isBlank(priorityUuid)) {
+                    throw new ProcessTaskPriorityIsEmptyException();
+                }
+                jsonObj.put("priorityUuid", priorityUuid);
             }
         } else {
             jsonObj.remove("priorityUuid");
