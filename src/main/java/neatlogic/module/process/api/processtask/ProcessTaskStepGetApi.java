@@ -7,14 +7,9 @@ import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.config.ConfigManager;
 import neatlogic.framework.exception.type.PermissionDeniedException;
-import neatlogic.framework.form.attribute.core.FormAttributeDataConversionHandlerFactory;
-import neatlogic.framework.form.attribute.core.IFormAttributeDataConversionHandler;
-import neatlogic.framework.form.dto.FormAttributeVo;
-import neatlogic.framework.form.dto.FormVersionVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ItsmTenantConfig;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.dto.ProcessTaskFormAttributeDataVo;
 import neatlogic.framework.process.dto.ProcessTaskScoreTemplateVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
@@ -27,12 +22,10 @@ import neatlogic.module.process.common.config.ProcessConfig;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.dao.mapper.score.ScoreTemplateMapper;
 import neatlogic.module.process.service.ProcessTaskService;
-import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -118,30 +111,30 @@ public class ProcessTaskStepGetApi extends PrivateApiComponentBase {
             protected void execute() {
                 try {
                     processTaskService.setProcessTaskDetail(processTaskVo);
-                    JSONObject formConfig = processTaskVo.getFormConfig();
-                    if (MapUtils.isNotEmpty(formConfig)) {
-                        FormVersionVo formVersionVo = new FormVersionVo();
-                        String mainSceneUuid = formConfig.getString("uuid");
-                        formVersionVo.setSceneUuid(mainSceneUuid);
-                        formVersionVo.setFormConfig(formConfig);
-                        Map<String, FormAttributeVo> formAttributeVoMap = new HashMap<>();
-                        List<FormAttributeVo> formAttributeList = formVersionVo.getFormAttributeList();
-                        for (FormAttributeVo formAttributeVo : formAttributeList) {
-                            formAttributeVoMap.put(formAttributeVo.getUuid(), formAttributeVo);
-                        }
-                        List<ProcessTaskFormAttributeDataVo> processTaskFormAttributeDataList = processTaskVo.getProcessTaskFormAttributeDataList();
-                        for (ProcessTaskFormAttributeDataVo processTaskFormAttributeDataVo : processTaskFormAttributeDataList) {
-                            FormAttributeVo formAttributeVo = formAttributeVoMap.get(processTaskFormAttributeDataVo.getAttributeUuid());
-                            if (formAttributeVo != null) {
-                                IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
-                                if (formAttributeDataConversionHandler != null) {
-                                    Object dataObj = formAttributeDataConversionHandler.passwordMask(processTaskFormAttributeDataVo.getDataObj(), formAttributeVo.getConfig());
-                                    processTaskFormAttributeDataVo.setDataObj(dataObj);
-                                }
-                            }
-                            processTaskVo.getFormAttributeDataMap().put(processTaskFormAttributeDataVo.getAttributeUuid(), processTaskFormAttributeDataVo.getDataObj());
-                        }
-                    }
+//                    JSONObject formConfig = processTaskVo.getFormConfig();
+//                    if (MapUtils.isNotEmpty(formConfig)) {
+//                        FormVersionVo formVersionVo = new FormVersionVo();
+//                        String mainSceneUuid = formConfig.getString("uuid");
+//                        formVersionVo.setSceneUuid(mainSceneUuid);
+//                        formVersionVo.setFormConfig(formConfig);
+//                        Map<String, FormAttributeVo> formAttributeVoMap = new HashMap<>();
+//                        List<FormAttributeVo> formAttributeList = formVersionVo.getFormAttributeList();
+//                        for (FormAttributeVo formAttributeVo : formAttributeList) {
+//                            formAttributeVoMap.put(formAttributeVo.getUuid(), formAttributeVo);
+//                        }
+//                        List<ProcessTaskFormAttributeDataVo> processTaskFormAttributeDataList = processTaskVo.getProcessTaskFormAttributeDataList();
+//                        for (ProcessTaskFormAttributeDataVo processTaskFormAttributeDataVo : processTaskFormAttributeDataList) {
+//                            FormAttributeVo formAttributeVo = formAttributeVoMap.get(processTaskFormAttributeDataVo.getAttributeUuid());
+//                            if (formAttributeVo != null) {
+//                                IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
+//                                if (formAttributeDataConversionHandler != null) {
+//                                    Object dataObj = formAttributeDataConversionHandler.passwordMask(processTaskFormAttributeDataVo.getDataObj(), formAttributeVo.getConfig());
+//                                    processTaskFormAttributeDataVo.setDataObj(dataObj);
+//                                }
+//                            }
+//                            processTaskVo.getFormAttributeDataMap().put(processTaskFormAttributeDataVo.getAttributeUuid(), processTaskFormAttributeDataVo.getDataObj());
+//                        }
+//                    }
                 } finally {
                     phaser.arrive();
                 }

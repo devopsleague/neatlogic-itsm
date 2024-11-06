@@ -1060,11 +1060,11 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
                 Object data = formAttributeDataMap.get(attributeUuid);
                 IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
                 if (formAttributeDataConversionHandler != null) {
-                    Object oldData = null;
-                    if (oldProcessTaskFormAttributeData != null) {
-                        oldData = oldProcessTaskFormAttributeData.getDataObj();
-                    }
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
+//                    Object oldData = null;
+//                    if (oldProcessTaskFormAttributeData != null) {
+//                        oldData = oldProcessTaskFormAttributeData.getDataObj();
+//                    }
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig());//, oldData
                 }
 
                 ProcessTaskFormAttributeDataVo formAttributeDataVo = new ProcessTaskFormAttributeDataVo();
@@ -1144,11 +1144,11 @@ public class ProcessStepHandlerUtil implements IProcessStepHandlerUtil, IProcess
                 Object data = formExtendAttributeDataObj.get("dataList");
                 IFormAttributeDataConversionHandler formAttributeDataConversionHandler = FormAttributeDataConversionHandlerFactory.getHandler(formAttributeVo.getHandler());
                 if (formAttributeDataConversionHandler != null) {
-                    Object oldData = null;
-                    if (oldAttributeDataVo != null) {
-                        oldData = oldAttributeDataVo.getDataObj();
-                    }
-                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig(), oldData);
+//                    Object oldData = null;
+//                    if (oldAttributeDataVo != null) {
+//                        oldData = oldAttributeDataVo.getDataObj();
+//                    }
+                    data = formAttributeDataConversionHandler.passwordEncryption(data, formAttributeVo.getConfig());// , oldData
                 }
 
                 ProcessTaskFormAttributeDataVo processTaskExtendFormAttributeDataVo = new ProcessTaskFormAttributeDataVo();
