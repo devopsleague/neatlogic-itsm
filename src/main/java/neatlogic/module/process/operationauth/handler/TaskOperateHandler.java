@@ -862,13 +862,7 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                     if (SystemUser.SYSTEM.getUserUuid().equals(userUuid)) {
                         return true;
                     }
-                    //3.判断当前用户是否有“工单管理权限”，如果没有，则提示“没有工单管理权限”；
-                    if (!AuthActionChecker.checkByUserUuid(userUuid, PROCESSTASK_MODIFY.class.getSimpleName())) {
-                        operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
-                                .put(operationType, new ProcessTaskNotProcessTaskModifyException());
-                        return false;
-                    }
-                    //4.依次判断当前用户是否是工单上报人、代报人、处理人、待处理人，如果都不是，则提示“您不是工单干系人”；
+                    //3.依次判断当前用户是否是工单上报人、代报人、处理人、待处理人，如果都不是，则提示“您不是工单干系人”；
                     if (userUuid.equals(processTaskVo.getOwner())) {
                         return true;
                     } else if (userUuid.equals(processTaskVo.getReporter())) {
@@ -878,9 +872,14 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                     } else if (checkIsWorker(processTaskVo, userUuid)) {
                         return true;
                     }
-                    operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
-                            .put(operationType, new ProcessTaskNotProcessUserException());
-                    return false;
+
+                    //4.判断当前用户是否有“工单管理权限”，如果没有，则提示“没有工单管理权限”；
+                    if (!AuthActionChecker.checkByUserUuid(userUuid, PROCESSTASK_MODIFY.class.getSimpleName())) {
+                        operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
+                                .put(operationType, new ProcessTaskNotProcessTaskModifyException());
+                        return false;
+                    }
+                    return true;
                 });
     }
 
