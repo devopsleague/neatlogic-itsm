@@ -61,6 +61,7 @@ public class ProcessConditionList extends PrivateApiComponentBase {
     @Description(desc = "nmpap.processconditionlist.getname")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
+        System.out.println("process/condition/lis = " + jsonObj);
         JSONArray resultArray = new JSONArray();
         Integer isAll = jsonObj.getInteger("isAll");
         // 固定字段条件
@@ -144,6 +145,14 @@ public class ProcessConditionList extends PrivateApiComponentBase {
                 }
             }
         }
+        ConditionParamVo conditionParamVo = new ConditionParamVo();
+        conditionParamVo.setName("a");
+        conditionParamVo.setLabel("A");
+        conditionParamVo.setController("");
+        conditionParamVo.setType("");
+        conditionParamVo.setHandler("");
+        conditionParamVo.setConfig("");
+        resultArray.add(conditionParamVo);
         return resultArray;
     }
 }
