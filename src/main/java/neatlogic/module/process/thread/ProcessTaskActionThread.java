@@ -31,10 +31,7 @@ import neatlogic.framework.integration.dto.IntegrationVo;
 import neatlogic.framework.notify.core.INotifyTriggerType;
 import neatlogic.framework.notify.dto.ParamMappingVo;
 import neatlogic.framework.process.condition.core.ProcessTaskConditionFactory;
-import neatlogic.framework.process.constvalue.ProcessFieldType;
-import neatlogic.framework.process.constvalue.ProcessTaskAuditDetailType;
-import neatlogic.framework.process.constvalue.ProcessTaskAuditType;
-import neatlogic.framework.process.constvalue.ProcessTaskParams;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.ProcessTaskActionVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
@@ -136,7 +133,8 @@ public class ProcessTaskActionThread extends NeatLogicThread {
                         JSONObject integrationParam = new JSONObject();
                         JSONArray paramMappingArray = actionObj.getJSONArray("paramMappingList");
                         if (CollectionUtils.isNotEmpty(paramMappingArray)) {
-                            JSONObject processFieldData = ProcessTaskConditionFactory.getConditionParamData(processTaskParams, currentProcessTaskStepVo);
+                            String formTag = actionObj.getString("formTag");
+                            JSONObject processFieldData = ProcessTaskConditionFactory.getConditionParamData(processTaskParams, currentProcessTaskStepVo, formTag);
                             List<ParamMappingVo> paramMappingList = paramMappingArray.toJavaList(ParamMappingVo.class);
                             for (ParamMappingVo paramMappingVo : paramMappingList) {
                                 if (ProcessFieldType.CONSTANT.getValue().equals(paramMappingVo.getType())) {
