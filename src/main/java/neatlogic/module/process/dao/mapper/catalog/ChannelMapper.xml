@@ -29,36 +29,42 @@
             LEFT
         </if>
         JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
-        WHERE 1=1
-        <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
-            AND c.`uuid` IN
-            <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
-                #{authorizedUuid}
-            </foreach>
+        <if test="formUuid != null and formUuid != '' ">
+            JOIN
+            channel_process cp on c.uuid = cp.channel_uuid
+            JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
         </if>
-        <if test="parentUuid != null">
-            AND c.`parent_uuid` = #{parentUuid}
-        </if>
-        <if test="keyword != null and keyword != ''">
-            AND c.`name` LIKE CONCAT('%',#{keyword},'%')
-        </if>
-        <if test="isActive != null">
-            AND c.`is_active` = #{isActive}
-        </if>
-        <if test="support == 'mobile'">
-            AND c.`support` != 'pc'
-        </if>
-        <if test="support == 'pc'">
-            AND c.`support` != 'mobile'
-        </if>
-        <if test="isFavorite == 1">
-            AND NOT EXISTS(
-            SELECT `uuid`
-            FROM `catalog`
-            WHERE `lft` &lt;= (SELECT `lft` FROM `catalog` WHERE `uuid` = c.`parent_uuid`) AND `rht` &gt;=
-            (SELECT `rht` FROM `catalog` WHERE `uuid` = c.`parent_uuid`)
-            and `is_active` = 0)
-        </if>
+        <where>
+            <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
+                AND c.`uuid` IN
+                <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
+                    #{authorizedUuid}
+                </foreach>
+            </if>
+            <if test="parentUuid != null">
+                AND c.`parent_uuid` = #{parentUuid}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND c.`name` LIKE CONCAT('%',#{keyword},'%')
+            </if>
+            <if test="isActive != null">
+                AND c.`is_active` = #{isActive}
+            </if>
+            <if test="support == 'mobile'">
+                AND c.`support` != 'pc'
+            </if>
+            <if test="support == 'pc'">
+                AND c.`support` != 'mobile'
+            </if>
+            <if test="isFavorite == 1">
+                AND NOT EXISTS(
+                SELECT `uuid`
+                FROM `catalog`
+                WHERE `lft` &lt;= (SELECT `lft` FROM `catalog` WHERE `uuid` = c.`parent_uuid`) AND `rht` &gt;=
+                (SELECT `rht` FROM `catalog` WHERE `uuid` = c.`parent_uuid`)
+                and `is_active` = 0)
+            </if>
+        </where>
     </select>
 
     <resultMap type="neatlogic.framework.process.dto.ChannelVo" id="channelMap">
@@ -110,36 +116,42 @@
             LEFT
         </if>
         JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
-        WHERE 1=1
-        <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
-            AND c.`uuid` IN
-            <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
-                #{authorizedUuid}
-            </foreach>
+        <if test="formUuid != null and formUuid != ''">
+            JOIN
+            channel_process cp on c.uuid = cp.channel_uuid
+            JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
         </if>
-        <if test="parentUuid != null">
-            AND c.`parent_uuid` = #{parentUuid}
-        </if>
-        <if test="keyword != null and keyword != ''">
-            AND c.`name` LIKE CONCAT('%',#{keyword},'%')
-        </if>
-        <if test="isActive != null">
-            AND c.`is_active` = #{isActive}
-        </if>
-        <if test="support == 'mobile'">
-            AND c.`support` != 'pc'
-        </if>
-        <if test="support == 'pc'">
-            AND c.`support` != 'mobile'
-        </if>
-        <if test="isFavorite == 1">
-            AND NOT EXISTS(
-            SELECT `uuid`
-            FROM `catalog`
-            WHERE `lft` &lt;= (SELECT `lft` FROM `catalog` WHERE `uuid` = c.`parent_uuid`) AND `rht` &gt;=
-            (SELECT `rht` FROM `catalog` WHERE `uuid` = c.`parent_uuid`)
-            and `is_active` = 0)
-        </if>
+        <where>
+            <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
+                AND c.`uuid` IN
+                <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
+                    #{authorizedUuid}
+                </foreach>
+            </if>
+            <if test="parentUuid != null">
+                AND c.`parent_uuid` = #{parentUuid}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND c.`name` LIKE CONCAT('%',#{keyword},'%')
+            </if>
+            <if test="isActive != null">
+                AND c.`is_active` = #{isActive}
+            </if>
+            <if test="support == 'mobile'">
+                AND c.`support` != 'pc'
+            </if>
+            <if test="support == 'pc'">
+                AND c.`support` != 'mobile'
+            </if>
+            <if test="isFavorite == 1">
+                AND NOT EXISTS(
+                SELECT `uuid`
+                FROM `catalog`
+                WHERE `lft` &lt;= (SELECT `lft` FROM `catalog` WHERE `uuid` = c.`parent_uuid`) AND `rht` &gt;=
+                (SELECT `rht` FROM `catalog` WHERE `uuid` = c.`parent_uuid`)
+                and `is_active` = 0)
+            </if>
+        </where>
         <choose>
             <when test="isFavorite == 1">
                 ORDER BY cu.`insert_time` DESC
@@ -156,19 +168,19 @@
     <select id="getAllChannelList" resultType="neatlogic.framework.process.dto.ChannelVo" useCache="false">
         SELECT `uuid`,
                `name`,
-               `parent_uuid`       AS parentUuid,
-               `is_active`         AS isActive,
-               `is_active_priority` AS isActivePriority,
+               `parent_uuid`         AS parentUuid,
+               `is_active`           AS isActive,
+               `is_active_priority`  AS isActivePriority,
                `is_display_priority` AS isDisplayPriority,
                `icon`,
                `color`,
                `desc`,
                `sort`,
                `sla`,
-               `content_help` AS contentHelp,
-               `channel_type_uuid` AS channelTypeUuid,
+               `content_help`        AS contentHelp,
+               `channel_type_uuid`   AS channelTypeUuid,
                `support`,
-               `config`            AS configStr
+               `config`              AS configStr
         FROM `channel`
     </select>
 
@@ -185,28 +197,34 @@
         <if test="userUuid != null and userUuid != ''">
             JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
         </if>
-        WHERE 1=1
-        <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
-            AND c.`uuid` IN
-            <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
-                #{authorizedUuid}
-            </foreach>
+        <if test="formUuid != null and formUuid != ''">
+            JOIN
+            channel_process cp on c.uuid = cp.channel_uuid
+            JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
         </if>
-        <if test="parentUuid != null">
-            AND c.`parent_uuid` = #{parentUuid}
-        </if>
-        <if test="keyword != null and keyword != ''">
-            AND c.`name` LIKE CONCAT('%',#{keyword},'%')
-        </if>
-        <if test="isActive != null">
-            AND c.`is_active` = #{isActive}
-        </if>
-        <if test="support == 'mobile'">
-            AND c.`support` != 'pc'
-        </if>
-        <if test="support == 'pc'">
-            AND c.`support` != 'mobile'
-        </if>
+        <where>
+            <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
+                AND c.`uuid` IN
+                <foreach collection="authorizedUuidList" item="authorizedUuid" open="(" separator="," close=")">
+                    #{authorizedUuid}
+                </foreach>
+            </if>
+            <if test="parentUuid != null">
+                AND c.`parent_uuid` = #{parentUuid}
+            </if>
+            <if test="keyword != null and keyword != ''">
+                AND c.`name` LIKE CONCAT('%',#{keyword},'%')
+            </if>
+            <if test="isActive != null">
+                AND c.`is_active` = #{isActive}
+            </if>
+            <if test="support == 'mobile'">
+                AND c.`support` != 'pc'
+            </if>
+            <if test="support == 'pc'">
+                AND c.`support` != 'mobile'
+            </if>
+        </where>
         <choose>
             <when test="isFavorite == 1 and userUuid != null and userUuid != ''">
                 ORDER BY cu.`insert_time` DESC
@@ -224,19 +242,19 @@
             resultType="neatlogic.framework.process.dto.ChannelVo" useCache="true">
         SELECT `uuid`,
                `name`,
-               `parent_uuid`       AS parentUuid,
-               `is_active`         AS isActive,
-               `is_active_priority` AS isActivePriority,
+               `parent_uuid`         AS parentUuid,
+               `is_active`           AS isActive,
+               `is_active_priority`  AS isActivePriority,
                `is_display_priority` AS isDisplayPriority,
                `icon`,
                `color`,
                `desc`,
                `sort`,
                `sla`,
-               `content_help`      AS contentHelp,
-               `channel_type_uuid` AS channelTypeUuid,
+               `content_help`        AS contentHelp,
+               `channel_type_uuid`   AS channelTypeUuid,
                `support`,
-               `config`            AS configStr
+               `config`              AS configStr
         FROM `channel`
         WHERE `uuid` = #{value}
     </select>
@@ -245,19 +263,19 @@
             resultType="neatlogic.framework.process.dto.ChannelVo" useCache="false">
         SELECT c.`uuid`,
                c.`name`,
-               c.`parent_uuid`       AS parentUuid,
-               c.`is_active`         AS isActive,
-               c.`is_active_priority` AS isActivePriority,
+               c.`parent_uuid`         AS parentUuid,
+               c.`is_active`           AS isActive,
+               c.`is_active_priority`  AS isActivePriority,
                c.`is_display_priority` AS isDisplayPriority,
                c.`icon`,
                c.`color`,
                c.`desc`,
                c.`sort`,
                c.`sla`,
-               c.`content_help`      AS contentHelp,
-               c.`channel_type_uuid` AS channelTypeUuid,
+               c.`content_help`        AS contentHelp,
+               c.`channel_type_uuid`   AS channelTypeUuid,
                c.`support`,
-               c.`config`            AS configStr
+               c.`config`              AS configStr
         FROM `channel` c
         WHERE c.`name` = #{value}
     </select>
@@ -276,7 +294,7 @@
         c.`desc`,
         c.`sort`,
         c.`sla`,
-        c.`content_help`      AS contentHelp,
+        c.`content_help` AS contentHelp,
         c.`channel_type_uuid` AS channelTypeUuid,
         cp.`process_uuid` AS processUuid,
         cw.`worktime_uuid` AS worktimeUuid
@@ -304,7 +322,7 @@
         `color`,
         `sort`,
         `sla`,
-        `content_help`      AS contentHelp,
+        `content_help` AS contentHelp,
         `channel_type_uuid` AS channelTypeUuid,
         `support`,
         `config` AS configStr

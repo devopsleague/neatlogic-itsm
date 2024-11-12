@@ -156,7 +156,7 @@ public class ConditionProcessComponent extends ProcessStepHandlerBase {
                                         if (conditionParamData == null) {
                                             conditionParamData = ProcessTaskConditionFactory.getConditionParamData(ConditionProcessTaskOptions.values(), currentProcessTaskStepVo, formTag);
                                             if (logger.isDebugEnabled()) {
-                                                logger.debug("conditionParamData = " + conditionParamData.toJSONString());
+                                                logger.debug("conditionParamData = {}", conditionParamData.toJSONString());
                                             }
                                         }
                                         ConditionConfigVo conditionConfigVo = null;
