@@ -29,11 +29,11 @@
             LEFT
         </if>
         JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
-        <if test="formUuid != null and formUuid != '' ">
+        <!--<if test="formUuid != null and formUuid != '' ">
             JOIN
             channel_process cp on c.uuid = cp.channel_uuid
             JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
-        </if>
+        </if>-->
         <where>
             <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
                 AND c.`uuid` IN
@@ -116,11 +116,11 @@
             LEFT
         </if>
         JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
-        <if test="formUuid != null and formUuid != ''">
+        <!--<if test="formUuid != null and formUuid != ''">
             JOIN
             channel_process cp on c.uuid = cp.channel_uuid
             JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
-        </if>
+        </if>-->
         <where>
             <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
                 AND c.`uuid` IN
@@ -197,11 +197,11 @@
         <if test="userUuid != null and userUuid != ''">
             JOIN `channel_user` cu ON cu.`channel_uuid` = c.`uuid` AND cu.`user_uuid` = #{userUuid}
         </if>
-        <if test="formUuid != null and formUuid != ''">
+        <!--<if test="formUuid != null and formUuid != ''">
             JOIN
             channel_process cp on c.uuid = cp.channel_uuid
             JOIN process_form pf on cp.process_uuid = pf.process_uuid AND pf.form_uuid = #{formUuid}
-        </if>
+        </if>-->
         <where>
             <if test="authorizedUuidList != null and authorizedUuidList.size() > 0">
                 AND c.`uuid` IN
