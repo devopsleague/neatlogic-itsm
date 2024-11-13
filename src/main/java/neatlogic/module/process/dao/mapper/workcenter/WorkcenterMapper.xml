@@ -42,44 +42,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
 
     <select id="getAuthorizedWorkcenterUuidList" resultType="java.lang.String">
         SELECT
-        DISTINCT
+        distinct
         pw.`uuid`
         FROM
         `process_workcenter` pw
         LEFT JOIN `process_workcenter_authority` pwa ON pw.`uuid` = pwa.`workcenter_uuid`
         LEFT JOIN `process_workcenter_owner` pwo ON pw.`uuid` = pwo.`workcenter_uuid`
         <where>
-            pw.support in ('all',#{deviceType})
-            and
-            (
-            (pwa.type = 'common' AND pwa.`uuid` = 'alluser')
-            <if test="userUuid != null and userUuid != ''">
-                OR (pwa.type = 'user' AND pwa.`uuid` = #{userUuid})
-            </if>
-            <if test="teamUuidList != null and teamUuidList.size() > 0">
-                OR (pwa.type = 'team' AND pwa.`uuid` IN
-                <foreach collection="teamUuidList" item="teamUuid" open="(" separator="," close=")">
-                    #{teamUuid}
-                </foreach>
+            pw.is_active = 1
+            and (
+                pw.support in ('all',#{workcenter.device})
+                and
+                (
+                (pwa.type = 'common' AND pwa.`uuid` = 'alluser')
+                <if test="workcenter.authList != null and workcenter.authList.size() > 0">
+                    OR pwa.`uuid` IN
+                    <foreach collection="workcenter.authList" item="auth" open="(" separator="," close=")">
+                        #{auth}
+                    </foreach>
+                </if>
+                <if test="workcenter.owner != null and workcenter.owner != ''">
+                    or pwo.`user_uuid` = #{workcenter.owner}
+                </if>
                 )
-            </if>
-            <if test="roleUuidList != null and roleUuidList.size() > 0">
-                OR (pwa.type = 'role' AND pwa.`uuid` IN
-                <foreach collection="roleUuidList" item="roleUuid" open="(" separator="," close=")">
-                    #{roleUuid}
-                </foreach>
-                )
-            </if>
-            <if test="userUuid != null and userUuid != ''">
-                or pwo.`user_uuid` = #{userUuid}
-            </if>
+                <if test="isHasNewTypeAuth == 0">
+                    and pw.`type` != 'custom'
+                </if>
+                <if test="isHasModifiedAuth == 1">
+                    or pw.`type` in ('system','factory')
+                </if>
             )
-            <if test="isHasNewTypeAuth == 0">
-                and pw.`type` != 'custom'
-            </if>
-            <if test="isHasModifiedAuth == 1">
-                or pw.`type` in ('system','factory')
-            </if>
         </where>
     </select>
 
@@ -245,6 +237,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
         SELECT `config` FROM `process_workcenter_thead_config`
         WHERE `hash` = #{value}
     </select>
+    <select id="getCustomWorkcenterCountByOwner" resultType="java.lang.Integer">
+        SELECT COUNT(1)
+        FROM process_workcenter pw
+        left join process_workcenter_owner pwo on pw.uuid = pwo.workcenter_uuid
+        WHERE pwo.user_uuid = #{value} and pw.type = 'custom'
+    </select>
 
     <delete id="deleteWorkcenterByUuid" parameterType="java.lang.String">
         DELETE
@@ -298,7 +296,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
                                           `is_show_total`,
                                           `support`,
                                           `thead_config_hash`,
-                                          `catalog_id`)
+                                          `catalog_id`,
+                                          `fcd`,
+                                          `fcu`)
         VALUES (#{uuid},
                 #{name},
                 #{type},
@@ -307,7 +307,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.-->
                 #{isShowTotal},
                 #{support},
                 #{theadConfigHash},
-                #{catalogId})
+                #{catalogId},
+                now(),
+                #{fcu})
         ON DUPLICATE KEY UPDATE `name`            = #{name},
                                 `type`            = #{type},
                                 `sort`            = #{sort},

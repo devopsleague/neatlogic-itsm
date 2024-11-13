@@ -26,10 +26,7 @@ public interface WorkcenterMapper {
     List<WorkcenterVo> getAllWorkcenterConditionConfig();
 
     List<String> getAuthorizedWorkcenterUuidList(
-            @Param("userUuid") String userUuid,
-            @Param("teamUuidList") List<String> teamUuidList,
-            @Param("roleUuidList") List<String> roleUuidList,
-            @Param("deviceType") String deviceType,
+            @Param("workcenter") WorkcenterVo workcenter,
             @Param("isHasModifiedAuth") int isHasModifiedAuth,
             @Param("isHasNewTypeAuth") int isHasNewTypeAuth
     );
@@ -47,6 +44,8 @@ public interface WorkcenterMapper {
     int checkWorkcenterCatalogIsExists(Long id);
 
     int checkWorkcenterCatalogIsUsed(Long id);
+
+    int getCustomWorkcenterCountByOwner(String userUuid);
 
     WorkcenterVo getWorkcenterByUuid(@Param("uuid") String workcenterUuid);
 

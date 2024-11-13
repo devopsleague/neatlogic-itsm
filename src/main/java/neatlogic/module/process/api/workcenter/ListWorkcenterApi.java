@@ -35,12 +35,8 @@ import neatlogic.framework.process.workcenter.dto.WorkcenterVo;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import neatlogic.framework.service.AuthenticationInfoService;
 import neatlogic.module.process.dao.mapper.workcenter.WorkcenterMapper;
-import neatlogic.module.process.service.NewWorkcenterService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -51,15 +47,8 @@ import java.util.stream.Collectors;
 @AuthAction(action = PROCESS_BASE.class)
 @OperationType(type = OperationTypeEnum.SEARCH)
 public class ListWorkcenterApi extends PrivateApiComponentBase {
-    private static final Logger logger = LoggerFactory.getLogger(ListWorkcenterApi.class);
     @Resource
     WorkcenterMapper workcenterMapper;
-
-    @Resource
-    private AuthenticationInfoService authenticationInfoService;
-
-    @Resource
-    NewWorkcenterService newWorkcenterService;
 
     @Override
     public String getToken() {
@@ -84,12 +73,20 @@ public class ListWorkcenterApi extends PrivateApiComponentBase {
         JSONObject workcenterJson = new JSONObject();
         String userUuid = UserContext.get().getUserUuid(true);
         AuthenticationInfoVo authenticationInfoVo = UserContext.get().getAuthenticationInfoVo();
-        int isHasModifiedAuth = AuthActionChecker.check(WORKCENTER_MODIFY.class) ? 1 : 0;
-        int isHasNewTypeAuth = AuthActionChecker.check(WORKCENTER_NEW_TYPE.class) ? 1 : 0;
+        int isHasModifiedAuth = Boolean.TRUE.equals(AuthActionChecker.check(WORKCENTER_MODIFY.class)) ? 1 : 0;
+        int isHasNewTypeAuth = Boolean.TRUE.equals(AuthActionChecker.check(WORKCENTER_NEW_TYPE.class)) ? 1 : 0;
         List<WorkcenterVo> workcenterList = new ArrayList<>();
         String viewType = "table";//默认table展示
+        WorkcenterVo workcenterVo = new WorkcenterVo();
+        workcenterVo.setDevice(CommonUtil.getDevice());
+        List<String> authList = new ArrayList<>();
+        authList.add(userUuid);
+        authList.addAll(authenticationInfoVo.getTeamUuidList());
+        authList.addAll(authenticationInfoVo.getRoleUuidList());
+        workcenterVo.setAuthList(authList);
+        workcenterVo.setOwner(userUuid);
         //根据用户（用户、组、角色）授权、支持设备和是否拥有工单中心管理权限，查出工单分类列表
-        List<String> workcenterUuidList = workcenterMapper.getAuthorizedWorkcenterUuidList(userUuid, authenticationInfoVo.getTeamUuidList(), authenticationInfoVo.getRoleUuidList(), CommonUtil.getDevice(), isHasModifiedAuth, isHasNewTypeAuth);
+        List<String> workcenterUuidList = workcenterMapper.getAuthorizedWorkcenterUuidList(workcenterVo, isHasModifiedAuth, isHasNewTypeAuth);
         if (CollectionUtils.isNotEmpty(workcenterUuidList)) {
             workcenterList = workcenterMapper.getAuthorizedWorkcenterListByUuidList(workcenterUuidList);
             WorkcenterUserProfileVo userProfile = workcenterMapper.getWorkcenterUserProfileByUserUuid(userUuid);
@@ -109,7 +106,8 @@ public class ListWorkcenterApi extends PrivateApiComponentBase {
                 }
             }
             BatchRunner<WorkcenterVo> runner = new BatchRunner<>();
-            runner.execute(workcenterList, 3, (threadIndex, dataIndex, workcenter) -> {
+//            runner.execute(workcenterList, 3, (threadIndex, dataIndex, workcenter) -> {
+            for (WorkcenterVo workcenter : workcenterList) {
                 if (workcenter.getType().equals(ProcessWorkcenterType.FACTORY.getValue())) {
                     workcenter.setIsCanEdit(isWorkcenterManager ? 1 : 0);
                     if (Arrays.asList(ProcessWorkcenterInitType.ALL_PROCESSTASK.getValue(), ProcessWorkcenterInitType.DRAFT_PROCESSTASK.getValue(), ProcessWorkcenterInitType.DONE_OF_MINE_PROCESSTASK.getValue(), ProcessWorkcenterInitType.PROCESSING_OF_MINE_PROCESSTASK.getValue()).contains(workcenter.getUuid()) && isWorkcenterManager) {
@@ -133,21 +131,6 @@ public class ListWorkcenterApi extends PrivateApiComponentBase {
                     }
                 }
 
-                if (workcenter.getIsShowTotal() == 1) {
-                    try {
-                         /*
-                        由于需要一直显示我的待办数量，因此无论输入条件有没有设置我的待办，都需要把我的待办设为1来查询一次数量
-                         */
-//                        if (workcenter.getIsShowTotal() == 0) {
-//                            workcenter.getConditionConfig().put("isProcessingOfMine", 1);
-//                        }
-                        workcenter.setExpectOffsetRowNum(100);
-                        Integer ProcessingOfMineCount = newWorkcenterService.doSearchLimitCount(workcenter);
-                        workcenter.setProcessingOfMineCount(ProcessingOfMineCount > 99 ? "99+" : ProcessingOfMineCount.toString());
-                    } catch (Exception ex) {
-                        logger.error(ex.getMessage(), ex);
-                    }
-                }
                 workcenter.getHandlerType();
                 workcenter.setConditionConfig(null);
                 workcenter.setConditionConfigStr(null);
@@ -158,7 +141,8 @@ public class ListWorkcenterApi extends PrivateApiComponentBase {
                 //去除返回前端的多余字段
                 workcenter.setConditionGroupList(null);
                 workcenter.setConditionGroupRelList(null);
-            }, "WORKCENTER-LIST-SEARCHER");
+//            }, "WORKCENTER-LIST-SEARCHER");
+            }
         }
         workcenterJson.put("mobileIsOnline", Config.MOBILE_IS_ONLINE());
         workcenterJson.put("viewType", viewType);

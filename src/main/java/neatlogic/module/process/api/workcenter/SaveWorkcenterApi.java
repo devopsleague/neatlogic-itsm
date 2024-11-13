@@ -21,11 +21,13 @@ import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.auth.core.AuthActionChecker;
 import neatlogic.framework.common.constvalue.ApiParamType;
+import neatlogic.framework.config.ConfigManager;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.auth.WORKCENTER_MODIFY;
+import neatlogic.framework.process.constvalue.ItsmTenantConfig;
 import neatlogic.framework.process.constvalue.ProcessWorkcenterType;
+import neatlogic.framework.process.exception.workcenter.WorkcenterCustomCountLimitException;
 import neatlogic.framework.process.exception.workcenter.WorkcenterNoModifyAuthException;
-import neatlogic.framework.process.exception.workcenter.WorkcenterNotFoundException;
 import neatlogic.framework.process.exception.workcenter.WorkcenterParamException;
 import neatlogic.framework.process.workcenter.dto.WorkcenterAuthorityVo;
 import neatlogic.framework.process.workcenter.dto.WorkcenterCatalogVo;
@@ -41,9 +43,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.HashSet;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 @Transactional
 @Service
@@ -80,47 +82,38 @@ public class SaveWorkcenterApi extends PrivateApiComponentBase {
             @Param(name = "theadList", type = ApiParamType.JSONARRAY, isRequired = true, desc = "nmpaw.editworkcenterapi.input.param.desc.workcentertheadlist"),
             @Param(name = "isShowTotal", type = ApiParamType.INTEGER, desc = "nmpaw.editworkcenterapi.input.param.desc.isshowtotal")
     })
-    @Output({@Param(type = ApiParamType.STRING, desc = "分类uuid")})
+    @Output({@Param(type = ApiParamType.STRING, desc = "common.typeuuid")})
     @Description(desc = "nmpaw.saveworkcenterapi.getname")
     @Override
     public Object myDoService(JSONObject jsonObj) throws Exception {
         WorkcenterVo workcenterVo = JSON.toJavaObject(jsonObj, WorkcenterVo.class);
-        String uuid = jsonObj.getString("uuid");
-        WorkcenterVo oldWorkcenterVo = null;
-        if (StringUtils.isNotBlank(uuid)) {
-            oldWorkcenterVo = workcenterMapper.getWorkcenterByUuid(uuid);
-            if (oldWorkcenterVo != null) {
-                if (Objects.equals(oldWorkcenterVo.getType(), ProcessWorkcenterType.FACTORY.getValue())) {//如果是出厂类型，则不允许修改类型
-                    workcenterVo.setType(ProcessWorkcenterType.FACTORY.getValue());
-                }
-            } else {
-                throw new WorkcenterNotFoundException(uuid);
-            }
-        }
-        Set<String> systemAuthSet = new HashSet<String>() {{
-            this.add(ProcessWorkcenterType.FACTORY.getValue());
-            this.add(ProcessWorkcenterType.SYSTEM.getValue());
-        }};
-        if (systemAuthSet.contains(workcenterVo.getType()) || (oldWorkcenterVo != null && systemAuthSet.contains(oldWorkcenterVo.getType()))) {
+        List<String> systemAuthList = Arrays.asList(ProcessWorkcenterType.FACTORY.getValue(), ProcessWorkcenterType.SYSTEM.getValue());
+        if (systemAuthList.contains(workcenterVo.getType())) {
             //判断是否有管理员权限
-            if (!AuthActionChecker.check(WORKCENTER_MODIFY.class.getSimpleName())) {
+            if (Boolean.FALSE.equals(AuthActionChecker.check(WORKCENTER_MODIFY.class.getSimpleName()))) {
                 throw new WorkcenterNoModifyAuthException();
             }
-            workcenterMapper.deleteWorkcenterAuthorityByUuid(workcenterVo.getUuid());
-        }
-        if (systemAuthSet.contains(workcenterVo.getType())) {
             if (CollectionUtils.isEmpty(workcenterVo.getAuthList())) {
                 throw new WorkcenterParamException("valueList");
             }
-            //更新角色
+            //角色
             for (String value : workcenterVo.getAuthList()) {
                 WorkcenterAuthorityVo authorityVo = new WorkcenterAuthorityVo(value);
                 authorityVo.setWorkcenterUuid(workcenterVo.getUuid());
                 workcenterMapper.insertWorkcenterAuthority(authorityVo);
             }
         } else {
-            if (StringUtils.isBlank(uuid)) {
-                workcenterMapper.insertWorkcenterOwner(UserContext.get().getUserUuid(true), workcenterVo.getUuid());
+            workcenterMapper.insertWorkcenterOwner(UserContext.get().getUserUuid(true), workcenterVo.getUuid());
+            //如果是个人工单分类，则需要校验数量限制
+            if (Objects.equals(workcenterVo.getType(), ProcessWorkcenterType.CUSTOM.getValue()) && Boolean.FALSE.equals(AuthActionChecker.check(WORKCENTER_MODIFY.class.getSimpleName()))) {
+                int count = workcenterMapper.getCustomWorkcenterCountByOwner(UserContext.get().getUserUuid(true));
+                String workcenterCustomLimit = ConfigManager.getConfig(ItsmTenantConfig.WORKCENTER_CUSTOM_LIMIT);
+                if (StringUtils.isNotBlank(workcenterCustomLimit)) {
+                    int countLimit = Integer.parseInt(workcenterCustomLimit);
+                    if (count >= countLimit) {
+                        throw new WorkcenterCustomCountLimitException(countLimit);
+                    }
+                }
             }
         }
         if (StringUtils.isNotBlank(workcenterVo.getCatalogName())) {
@@ -132,13 +125,10 @@ public class SaveWorkcenterApi extends PrivateApiComponentBase {
             }
             workcenterVo.setCatalogId(workcenterCatalogVo.getId());
         }
-        if (StringUtils.isBlank(uuid)) {
-            workcenterMapper.insertWorkcenter(workcenterVo);
-        } else {
-            workcenterMapper.updateWorkcenter(workcenterVo);
-        }
+        workcenterMapper.insertWorkcenter(workcenterVo);
+
         //update workcenter_thead_config
-        if(StringUtils.isNotBlank(workcenterVo.getTheadConfigStr())) {
+        if (StringUtils.isNotBlank(workcenterVo.getTheadConfigStr())) {
             workcenterMapper.insertWorkcenterTheadConfig(workcenterVo.getTheadConfigHash(), workcenterVo.getTheadConfigStr());
         }
         return workcenterVo.getUuid();
