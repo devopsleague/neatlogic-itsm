@@ -24,7 +24,7 @@ public class ProcessTaskActionTriggerUserIdCondition extends ProcessTaskConditio
 
     @Override
     public String getDisplayName() {
-        return "动作触发人ID";
+        return "动作触发人用户ID";
     }
 
     @Override
