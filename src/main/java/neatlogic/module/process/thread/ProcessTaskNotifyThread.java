@@ -29,8 +29,6 @@ import neatlogic.framework.notify.dto.NotifyReceiverVo;
 import neatlogic.framework.notify.dto.ParamMappingVo;
 import neatlogic.framework.process.condition.core.ProcessTaskConditionFactory;
 import neatlogic.framework.process.constvalue.ConditionProcessTaskOptions;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
@@ -38,6 +36,8 @@ import neatlogic.framework.process.notify.constvalue.ProcessTaskNotifyTriggerTyp
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
 import neatlogic.framework.util.NotifyPolicyUtil;
+import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.message.handler.ProcessTaskMessageHandler;
 import neatlogic.module.process.service.ProcessTaskService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -122,6 +122,19 @@ public class ProcessTaskNotifyThread extends NeatLogicThread {
                 notifyAuditMessageStringBuilder.append("(");
                 notifyAuditMessageStringBuilder.append(stepVo.getId());
                 notifyAuditMessageStringBuilder.append(")");
+
+                currentProcessTaskStepVo.setProcessTaskId(stepVo.getProcessTaskId());
+                currentProcessTaskStepVo.setName(stepVo.getName());
+                currentProcessTaskStepVo.setProcessStepUuid(stepVo.getProcessStepUuid());
+                currentProcessTaskStepVo.setStatus(stepVo.getStatus());
+                currentProcessTaskStepVo.setType(stepVo.getType());
+                currentProcessTaskStepVo.setHandler(stepVo.getHandler());
+                currentProcessTaskStepVo.setIsActive(stepVo.getIsActive());
+                currentProcessTaskStepVo.setConfigHash(stepVo.getConfigHash());
+                currentProcessTaskStepVo.setActiveTime(stepVo.getActiveTime());
+                currentProcessTaskStepVo.setStartTime(stepVo.getStartTime());
+                currentProcessTaskStepVo.setEndTime(stepVo.getEndTime());
+                currentProcessTaskStepVo.setError(stepVo.getError());
             }
 
             InvokeNotifyPolicyConfigVo invokeNotifyPolicyConfigVo = notifyServiceCrossoverService.regulateNotifyPolicyConfig(notifyPolicyConfig);
