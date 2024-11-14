@@ -64,13 +64,14 @@ import neatlogic.framework.process.exception.processtask.*;
 import neatlogic.framework.process.exception.processtask.task.ProcessTaskStepTaskNotCompleteException;
 import neatlogic.framework.process.fulltextindex.ProcessFullTextIndexType;
 import neatlogic.framework.process.notify.constvalue.ProcessTaskStepNotifyTriggerType;
-import neatlogic.framework.process.notify.constvalue.ProcessTaskStepTaskNotifyTriggerType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.IProcessStepHandler;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerFactory;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
 import neatlogic.framework.process.stepremind.core.ProcessTaskStepRemindTypeFactory;
+import neatlogic.framework.process.steptaskhandler.core.IProcessStepTaskHandler;
+import neatlogic.framework.process.steptaskhandler.core.ProcessStepTaskHandlerFactory;
 import neatlogic.framework.process.task.TaskConfigManager;
 import neatlogic.framework.process.workerpolicy.core.IWorkerPolicyHandler;
 import neatlogic.framework.process.workerpolicy.core.WorkerPolicyHandlerFactory;
@@ -1608,21 +1609,13 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
             receiverMap.computeIfAbsent(ProcessUserType.MAJOR.getValue(), k -> new ArrayList<>())
                     .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), processTaskStepUserVo.getUserUuid()));
         }
-        if (notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.COMPLETETASK
-                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.CREATETASK
-                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.DELETETASK
-                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.EDITTASK
-                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.COMPLETEALLTASK) {
-            /* 当前任务处理人 */
-            ProcessTaskStepTaskVo stepTaskVo = currentProcessTaskStepVo.getProcessTaskStepTaskVo();
-            if (stepTaskVo != null) {
-                List<ProcessTaskStepTaskUserVo> taskUserVoList = stepTaskVo.getStepTaskUserVoList();
-                if (CollectionUtils.isNotEmpty(taskUserVoList)) {
-                    for (ProcessTaskStepTaskUserVo taskUserVo : taskUserVoList) {
-                        receiverMap.computeIfAbsent(ProcessUserType.MINOR.getValue(), k -> new ArrayList<>())
-                                .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), taskUserVo.getUserUuid()));
-                    }
-                }
+
+        IProcessStepTaskHandler processStepTaskHandler = ProcessStepTaskHandlerFactory.getHandler(currentProcessTaskStepVo.getHandler());
+        if (processStepTaskHandler != null) {
+            List<ProcessTaskStepUserVo> minorUserList = processStepTaskHandler.getMinorUserListForNotifyReceiver(currentProcessTaskStepVo);
+            for (ProcessTaskStepUserVo processTaskStepUserVo : minorUserList) {
+                receiverMap.computeIfAbsent(ProcessUserType.MINOR.getValue(), k -> new ArrayList<>())
+                        .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), processTaskStepUserVo.getUserUuid()));
             }
         } else {
             /* 所有任务处理人 **/
@@ -1633,6 +1626,32 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
                         .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), processTaskStepUserVo.getUserUuid()));
             }
         }
+
+//        if (notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.COMPLETETASK
+//                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.CREATETASK
+//                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.DELETETASK
+//                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.EDITTASK
+//                || notifyTriggerType == ProcessTaskStepTaskNotifyTriggerType.COMPLETEALLTASK) {
+//            /* 当前任务处理人 */
+//            ProcessTaskStepTaskVo stepTaskVo = currentProcessTaskStepVo.getProcessTaskStepTaskVo();
+//            if (stepTaskVo != null) {
+//                List<ProcessTaskStepTaskUserVo> taskUserVoList = stepTaskVo.getStepTaskUserVoList();
+//                if (CollectionUtils.isNotEmpty(taskUserVoList)) {
+//                    for (ProcessTaskStepTaskUserVo taskUserVo : taskUserVoList) {
+//                        receiverMap.computeIfAbsent(ProcessUserType.MINOR.getValue(), k -> new ArrayList<>())
+//                                .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), taskUserVo.getUserUuid()));
+//                    }
+//                }
+//            }
+//        } else {
+//            /* 所有任务处理人 **/
+//            processTaskStepUser.setUserType(ProcessUserType.MINOR.getValue());
+//            List<ProcessTaskStepUserVo> minorUserList = processTaskMapper.getProcessTaskStepUserList(processTaskStepUser);
+//            for (ProcessTaskStepUserVo processTaskStepUserVo : minorUserList) {
+//                receiverMap.computeIfAbsent(ProcessUserType.MINOR.getValue(), k -> new ArrayList<>())
+//                        .add(new NotifyReceiverVo(GroupSearch.USER.getValue(), processTaskStepUserVo.getUserUuid()));
+//            }
+//        }
 
         /* 待处理人 **/
         List<ProcessTaskStepWorkerVo> workerList =
