@@ -8,12 +8,11 @@ import neatlogic.framework.notify.crossover.INotifyServiceCrossoverService;
 import neatlogic.framework.notify.dto.InvokeNotifyPolicyConfigVo;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.dto.ProcessStepTaskConfigVo;
-import neatlogic.framework.process.dto.ProcessStepVo;
-import neatlogic.framework.process.dto.ProcessStepWorkerPolicyVo;
-import neatlogic.framework.process.dto.ProcessTaskStepVo;
+import neatlogic.framework.process.constvalue.ProcessUserType;
+import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.processconfig.ActionConfigActionVo;
 import neatlogic.framework.process.dto.processconfig.ActionConfigVo;
+import neatlogic.framework.process.stephandler.core.IProcessStepAssistantHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerBase;
 import neatlogic.framework.process.util.ProcessConfigUtil;
 import neatlogic.module.process.notify.handler.OmnipotentNotifyPolicyHandler;
@@ -27,7 +26,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Service
-public class OmnipotentProcessUtilHandler extends ProcessStepInternalHandlerBase {
+public class OmnipotentProcessUtilHandler extends ProcessStepInternalHandlerBase implements IProcessStepAssistantHandler {
 
     @Override
     public String getHandler() {
@@ -274,4 +273,24 @@ public class OmnipotentProcessUtilHandler extends ProcessStepInternalHandlerBase
         return resultObj;
     }
 
+    @Override
+    public List<ProcessTaskStepUserVo> getMinorUserListForNotifyReceiver(ProcessTaskStepVo currentProcessTaskStepVo) {
+        List<ProcessTaskStepUserVo> resultList = new ArrayList<>();
+        /* 当前任务处理人 */
+        ProcessTaskStepTaskVo stepTaskVo = currentProcessTaskStepVo.getProcessTaskStepTaskVo();
+        if (stepTaskVo != null) {
+            List<ProcessTaskStepTaskUserVo> taskUserVoList = stepTaskVo.getStepTaskUserVoList();
+            if (CollectionUtils.isNotEmpty(taskUserVoList)) {
+                for (ProcessTaskStepTaskUserVo taskUserVo : taskUserVoList) {
+                    ProcessTaskStepUserVo processTaskStepUserVo = new ProcessTaskStepUserVo();
+                    processTaskStepUserVo.setProcessTaskId(currentProcessTaskStepVo.getProcessTaskId());
+                    processTaskStepUserVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                    processTaskStepUserVo.setUserType(ProcessUserType.MINOR.getValue());
+                    processTaskStepUserVo.setUserUuid(taskUserVo.getUserUuid());
+                    resultList.add(processTaskStepUserVo);
+                }
+            }
+        }
+        return resultList;
+    }
 }
