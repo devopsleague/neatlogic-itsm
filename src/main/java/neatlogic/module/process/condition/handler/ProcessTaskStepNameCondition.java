@@ -10,19 +10,25 @@ import neatlogic.framework.process.condition.core.ProcessTaskConditionBase;
 import neatlogic.framework.process.constvalue.ConditionConfigType;
 import neatlogic.framework.process.constvalue.ProcessFieldType;
 import neatlogic.framework.process.constvalue.ProcessTaskConditionType;
+import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.SqlDecoratorVo;
 import neatlogic.framework.process.workcenter.dto.JoinOnVo;
 import neatlogic.framework.process.workcenter.dto.JoinTableColumnVo;
 import neatlogic.framework.process.workcenter.table.ProcessTaskSqlTable;
 import neatlogic.framework.process.workcenter.table.ProcessTaskStepSqlTable;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 @Component
 public class ProcessTaskStepNameCondition extends ProcessTaskConditionBase implements IProcessTaskCondition {
+    @Resource
+    private ProcessTaskMapper processTaskMapper;
 
     @Override
     public String getName() {
@@ -81,7 +87,7 @@ public class ProcessTaskStepNameCondition extends ProcessTaskConditionBase imple
 
     @Override
     public Object valueConversionText(Object value, JSONObject config) {
-        return null;
+        return value;
     }
 
     @Override
@@ -103,5 +109,18 @@ public class ProcessTaskStepNameCondition extends ProcessTaskConditionBase imple
     @Override
     public boolean isShow(JSONObject object, String type) {
         return !Objects.equals(type, ProcessTaskConditionType.WORKCENTER.getValue());
+    }
+
+    @Override
+    public Object getConditionParamData(ProcessTaskStepVo processTaskStepVo) {
+        String stepName = processTaskStepVo.getName();
+        if (StringUtils.isBlank(stepName) && processTaskStepVo.getId() != null) {
+            ProcessTaskStepVo stepVo = processTaskMapper.getProcessTaskStepBaseInfoById(processTaskStepVo.getId());
+            if (stepVo != null) {
+                stepName = stepVo.getName();
+                processTaskStepVo.setName(stepName);
+            }
+        }
+        return stepName;
     }
 }
