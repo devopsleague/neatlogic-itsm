@@ -17,7 +17,7 @@
 
 package neatlogic.module.process.service;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 import neatlogic.framework.asynchronization.queue.NeatLogicBlockingQueue;
 import neatlogic.framework.asynchronization.thread.NeatLogicThread;
 import neatlogic.framework.asynchronization.threadlocal.TenantContext;
@@ -50,7 +50,7 @@ import java.util.stream.Collectors;
 public class ProcessTaskAsyncCreateServiceImpl implements ProcessTaskAsyncCreateService, IProcessTaskAsyncCreateCrossoverService {
     private static final Logger logger = LoggerFactory.getLogger(ProcessTaskAsyncCreateServiceImpl.class);
 
-    private final static NeatLogicBlockingQueue<Long> blockingQueue = new NeatLogicBlockingQueue<>(new LinkedBlockingQueue<>());
+    private static final NeatLogicBlockingQueue<Long> blockingQueue = new NeatLogicBlockingQueue<>(new LinkedBlockingQueue<>());
 
     @Resource
     private ProcessTaskAsyncCreateMapper processTaskAsyncCreateMapper;
@@ -172,7 +172,7 @@ public class ProcessTaskAsyncCreateServiceImpl implements ProcessTaskAsyncCreate
         processTaskAsyncCreateMapper.insertProcessTaskAsyncCreate(processTaskAsyncCreateVo);
         boolean offer = blockingQueue.offer(processTaskAsyncCreateVo.getId());
         if (!offer && logger.isDebugEnabled()) {
-            logger.debug("异步创建工单数据加入队列失败, processTaskAsyncCreateVo: " + JSONObject.toJSONString(processTaskAsyncCreateVo));
+            logger.debug("异步创建工单数据加入队列失败, processTaskAsyncCreateVo: {}", JSON.toJSONString(processTaskAsyncCreateVo));
         }
         return processTaskId;
     }
@@ -185,7 +185,7 @@ public class ProcessTaskAsyncCreateServiceImpl implements ProcessTaskAsyncCreate
         processTaskAsyncCreateMapper.updateProcessTaskAsyncCreateStatusToDoingById(id);
         boolean offer = blockingQueue.offer(id);
         if (!offer && logger.isDebugEnabled()) {
-            logger.debug("异步创建工单数据加入队列失败, id: " + id);
+            logger.debug("异步创建工单数据加入队列失败, id: {}", id);
         }
     }
 }
