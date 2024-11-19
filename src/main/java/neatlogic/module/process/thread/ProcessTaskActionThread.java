@@ -109,6 +109,19 @@ public class ProcessTaskActionThread extends NeatLogicThread {
                 ProcessTaskStepVo stepVo = processTaskMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepVo.getId());
                 String stepConfig = selectContentByHashMapper.getProcessTaskStepConfigByHash(stepVo.getConfigHash());
                 actionList = (JSONArray) JSONPath.read(stepConfig, "actionConfig.actionList");
+
+                currentProcessTaskStepVo.setProcessTaskId(stepVo.getProcessTaskId());
+                currentProcessTaskStepVo.setName(stepVo.getName());
+                currentProcessTaskStepVo.setProcessStepUuid(stepVo.getProcessStepUuid());
+                currentProcessTaskStepVo.setStatus(stepVo.getStatus());
+                currentProcessTaskStepVo.setType(stepVo.getType());
+                currentProcessTaskStepVo.setHandler(stepVo.getHandler());
+                currentProcessTaskStepVo.setIsActive(stepVo.getIsActive());
+                currentProcessTaskStepVo.setConfigHash(stepVo.getConfigHash());
+                currentProcessTaskStepVo.setActiveTime(stepVo.getActiveTime());
+                currentProcessTaskStepVo.setStartTime(stepVo.getStartTime());
+                currentProcessTaskStepVo.setEndTime(stepVo.getEndTime());
+                currentProcessTaskStepVo.setError(stepVo.getError());
             }
             /* 从步骤配置信息中获取动作列表 **/
             if (CollectionUtils.isNotEmpty(actionList)) {

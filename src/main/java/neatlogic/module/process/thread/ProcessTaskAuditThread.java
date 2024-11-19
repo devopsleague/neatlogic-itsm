@@ -24,9 +24,9 @@ import neatlogic.framework.process.audithandler.core.IProcessTaskAuditDetailType
 import neatlogic.framework.process.audithandler.core.IProcessTaskAuditType;
 import neatlogic.framework.process.audithandler.core.ProcessTaskAuditDetailTypeFactory;
 import neatlogic.framework.process.audithandler.core.ProcessTaskAuditTypeFactory;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.util.FreemarkerUtil;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.service.ProcessTaskService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -64,6 +64,7 @@ public class ProcessTaskAuditThread extends NeatLogicThread {
     public ProcessTaskAuditThread(ProcessTaskStepVo _currentProcessTaskStepVo, IProcessTaskAuditType _action) {
         super("PROCESSTASK-AUDIT-" + _currentProcessTaskStepVo.getId() + "-" + _action.getValue());
         currentProcessTaskStepVo = _currentProcessTaskStepVo;
+        currentProcessTaskStepVo.setIsAutoGenerateId(false);
         action = _action;
     }
 
@@ -92,31 +93,39 @@ public class ProcessTaskAuditThread extends NeatLogicThread {
             if (StringUtils.isNotBlank(source)) {
                 processTaskStepAuditVo.setSource(source);
             }
+            ProcessTaskStepVo stepVo = null;
             if (currentProcessTaskStepVo.getId() != null) {
-                processTaskStepAuditVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
-                String processTaskStepName = currentProcessTaskStepVo.getName();
-                if (StringUtils.isBlank(processTaskStepName)) {
-                    processTaskStepName = processTaskMapper.getProcessTaskStepNameById(currentProcessTaskStepVo.getId());
-                }
-                paramObj.put("processTaskStepName", processTaskStepName);
-                String configHash = currentProcessTaskStepVo.getConfigHash();
-                if (StringUtils.isBlank(configHash)) {
-                    ProcessTaskStepVo processTaskStepVo = processTaskMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepVo.getId());
-                    if (processTaskStepVo != null) {
-                        currentProcessTaskStepVo = processTaskStepVo;
+                stepVo = processTaskMapper.getProcessTaskStepBaseInfoById(currentProcessTaskStepVo.getId());
+                if (stepVo != null) {
+                    currentProcessTaskStepVo.setProcessTaskId(stepVo.getProcessTaskId());
+                    currentProcessTaskStepVo.setName(stepVo.getName());
+                    currentProcessTaskStepVo.setProcessStepUuid(stepVo.getProcessStepUuid());
+                    currentProcessTaskStepVo.setStatus(stepVo.getStatus());
+                    currentProcessTaskStepVo.setType(stepVo.getType());
+                    currentProcessTaskStepVo.setHandler(stepVo.getHandler());
+                    currentProcessTaskStepVo.setIsActive(stepVo.getIsActive());
+                    currentProcessTaskStepVo.setConfigHash(stepVo.getConfigHash());
+                    currentProcessTaskStepVo.setActiveTime(stepVo.getActiveTime());
+                    currentProcessTaskStepVo.setStartTime(stepVo.getStartTime());
+                    currentProcessTaskStepVo.setEndTime(stepVo.getEndTime());
+                    currentProcessTaskStepVo.setError(stepVo.getError());
+
+                    processTaskStepAuditVo.setProcessTaskStepId(currentProcessTaskStepVo.getId());
+                    String processTaskStepName = currentProcessTaskStepVo.getName();
+                    paramObj.put("processTaskStepName", processTaskStepName);
+                    JSONArray replaceableTextList = processTaskService.getReplaceableTextList(currentProcessTaskStepVo);
+                    for (int i = 0; i < replaceableTextList.size(); i++) {
+                        JSONObject replaceableText = replaceableTextList.getJSONObject(i);
+                        String name = replaceableText.getString("name");
+                        String value = replaceableText.getString("value");
+                        if (StringUtils.isBlank(value)) {
+                            value = replaceableText.getString("text");
+                        }
+                        paramObj.put(name, value);
                     }
                 }
-                JSONArray replaceableTextList = processTaskService.getReplaceableTextList(currentProcessTaskStepVo);
-                for (int i = 0; i < replaceableTextList.size(); i++) {
-                    JSONObject replaceableText = replaceableTextList.getJSONObject(i);
-                    String name = replaceableText.getString("name");
-                    String value = replaceableText.getString("value");
-                    if (StringUtils.isBlank(value)) {
-                        value = replaceableText.getString("text");
-                    }
-                    paramObj.put(name, value);
-                }
-            } else {
+            }
+            if (stepVo == null) {
                 ProcessTaskVo processTaskVo = processTaskMapper.getProcessTaskById(currentProcessTaskStepVo.getProcessTaskId());
                 if (processTaskVo != null) {
                     paramObj.put("processTaskStepName", processTaskVo.getTitle());
