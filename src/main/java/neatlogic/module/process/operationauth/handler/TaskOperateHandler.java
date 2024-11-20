@@ -881,6 +881,76 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                     }
                     return true;
                 });
+
+        /**
+         * 审批步骤转交权限
+         * 判断userUuid用户是否有步骤删除任务权限逻辑：
+         * userUuid用户是步骤的处理人
+         */
+        operationBiPredicateMap.put(ProcessTaskOperationType.TRANSFER_EOA_STEP,
+                (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+                    Long id = processTaskVo.getId();
+                    ProcessTaskOperationType operationType = ProcessTaskOperationType.TRANSFER_EOA_STEP;
+                    //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
+                    if (processTaskVo.getIsShow() == 0) {
+                        operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
+                                .put(operationType, new ProcessTaskHiddenException());
+                        return false;
+                    }
+                    //2.判断工单状态是否是“未提交”，如果是，则提示“工单未提交”；
+                    //3.判断工单状态是否是“已完成”，如果是，则提示“工单已完成”；
+                    //4.判断工单状态是否是“已取消”，如果是，则提示“工单已取消”；
+                    //5.判断工单状态是否是“异常”，如果是，则提示“工单异常”；
+                    //6.判断工单状态是否是“已挂起”，如果是，则提示“工单已挂起”；
+                    //7.判断工单状态是否是“已评分”，如果是，则提示“工单已评分”；
+                    ProcessTaskPermissionDeniedException exception = processTaskService.checkProcessTaskStatus(processTaskVo.getStatus(),
+                            ProcessTaskStatus.DRAFT,
+                            ProcessTaskStatus.SUCCEED,
+                            ProcessTaskStatus.ABORTED,
+                            ProcessTaskStatus.FAILED,
+                            ProcessTaskStatus.HANG,
+                            ProcessTaskStatus.SCORED);
+                    if (exception != null) {
+                        operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
+                                .put(operationType, exception);
+                        return false;
+                    }
+                    if (ProcessTaskStatus.RUNNING.getValue().equals(processTaskVo.getStatus())) {
+                        //系统用户默认拥有权限
+                        if (SystemUser.SYSTEM.getUserUuid().equals(userUuid)) {
+                            return true;
+                        }
+                        //8.判断当前用户是否有工单某个步骤的转交权限，如果没有，则提示“工单里没有您可以转交的步骤”；
+                        boolean flag = false;
+                        for (ProcessTaskStepVo processTaskStep : processTaskVo.getStepList()) {
+                            // 步骤状态为已激活的才能转交，否则跳过；
+                            if (!Objects.equals(processTaskStep.getIsActive(), 1)) {
+                                continue;
+                            }
+                            if (!Objects.equals(processTaskStep.getHandler(), "eoa")) {
+                                continue;
+                            }
+                            //9.判断步骤状态是否是“已完成”，如果是，则跳过；
+                            //10.判断步骤状态是否是“异常”，如果是，则跳过；
+                            //11.判断步骤状态是否是“已挂起”，如果是，则跳过；
+                            if (processTaskService.checkProcessTaskStepStatus(processTaskStep.getStatus(), ProcessTaskStepStatus.SUCCEED,
+                                    ProcessTaskStepStatus.FAILED,
+                                    ProcessTaskStepStatus.HANG) != null) {
+                                continue;
+                            }
+                            flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskOperationType.STEP_TRANSFER, userUuid);
+                            if (flag) {
+                                return true;
+                            }
+                        }
+                        if (!flag) {
+                            operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
+                                    .put(operationType, new ProcessTaskNoTransferableStepsException());
+                            return false;
+                        }
+                    }
+                    return false;
+                });
     }
 
     @Override
