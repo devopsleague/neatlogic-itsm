@@ -188,6 +188,7 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
         //System.out.println((System.currentTimeMillis() - ofMineStartTime) + " ##end workcenter-ofMine:-------------------------------------------------------------------------------");
         //System.out.println((System.currentTimeMillis() - theadStartTime) + " ##end workcenter:-------------------------------------------------------------------------------");
         returnObj.put("isAutoRefresh", Objects.equals(ConfigManager.getConfig(ItsmTenantConfig.WORKCENTER_AUTO_REFRESH), "1"));
+        returnObj.put("isNewPage", Objects.equals(ConfigManager.getConfig(ItsmTenantConfig.WORKCENTER_PROCESSTASK_NEWPAGE), "1"));
         return returnObj;
     }
 
