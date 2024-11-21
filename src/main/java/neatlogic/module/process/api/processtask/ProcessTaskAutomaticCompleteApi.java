@@ -6,7 +6,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.exception.process.ProcessStepHandlerNotFoundException;
 import neatlogic.framework.process.exception.processtask.ProcessTaskAutomaticNotAllowNextStepsException;
@@ -69,7 +69,7 @@ public class ProcessTaskAutomaticCompleteApi extends PrivateApiComponentBase {
 		    throw new ProcessTaskStepMustBeAutomaticException();
 		}
 		jsonObj.put("processTaskId", processTaskStepVo.getProcessTaskId());
-		if(action.equals(ProcessTaskOperationType.STEP_BACK.getValue())) {
+		if(action.equals(ProcessTaskStepOperationType.STEP_BACK.getValue())) {
 			flowDirection = ProcessFlowDirection.BACKWARD.getValue();
 		}
 		/* 不允许多个后续步骤 **/

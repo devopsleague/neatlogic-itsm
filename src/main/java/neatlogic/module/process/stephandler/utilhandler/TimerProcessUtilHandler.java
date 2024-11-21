@@ -18,7 +18,7 @@ package neatlogic.module.process.stephandler.utilhandler;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessStepVo;
 import neatlogic.framework.process.dto.ProcessStepWorkerPolicyVo;
 import neatlogic.framework.process.dto.ProcessTaskStepTimerVo;
@@ -116,11 +116,11 @@ public class TimerProcessUtilHandler extends ProcessStepInternalHandlerBase {
         resultObj.put("enableAuthority", 1);
         JSONArray authorityArray = new JSONArray();
         authorityArray.add(new JSONObject() {{
-            this.put("action", ProcessTaskOperationType.STEP_VIEW.getValue());
-            this.put("text", ProcessTaskOperationType.STEP_VIEW.getText());
-            this.put("defaultValue", ProcessTaskOperationType.STEP_VIEW.getDefaultValue());
-            this.put("acceptList", ProcessTaskOperationType.STEP_VIEW.getDefaultValue());
-            this.put("groupList", ProcessTaskOperationType.STEP_VIEW.getGroupList());
+            this.put("action", ProcessTaskStepOperationType.STEP_VIEW.getValue());
+            this.put("text", ProcessTaskStepOperationType.STEP_VIEW.getText());
+            this.put("defaultValue", ProcessTaskStepOperationType.STEP_VIEW.getDefaultValue());
+            this.put("acceptList", ProcessTaskStepOperationType.STEP_VIEW.getDefaultValue());
+            this.put("groupList", ProcessTaskStepOperationType.STEP_VIEW.getGroupList());
         }});
         resultObj.put("authorityList", authorityArray);
         /** 分配处理人 **/

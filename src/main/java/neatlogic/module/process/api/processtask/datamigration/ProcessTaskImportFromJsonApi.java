@@ -1,5 +1,7 @@
 package neatlogic.module.process.api.processtask.datamigration;
 
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONReader;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.file.dao.mapper.FileMapper;
@@ -7,7 +9,7 @@ import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
 import neatlogic.framework.process.constvalue.ProcessStepType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.processtaskserialnumberpolicy.ProcessTaskSerialNumberPolicyHandlerNotFoundException;
 import neatlogic.framework.process.exception.processtaskserialnumberpolicy.ProcessTaskSerialNumberPolicyNotFoundException;
@@ -19,11 +21,9 @@ import neatlogic.framework.restful.core.privateapi.PrivateJsonStreamApiComponent
 import neatlogic.framework.util.TimeUtil;
 import neatlogic.framework.worktime.dao.mapper.WorktimeMapper;
 import neatlogic.framework.worktime.dto.WorktimeVo;
-import neatlogic.module.process.dao.mapper.process.ProcessMapper;
-import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.JSONReader;
 import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.dao.mapper.catalog.PriorityMapper;
+import neatlogic.module.process.dao.mapper.process.ProcessMapper;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskSerialNumberMapper;
 import org.apache.commons.collections4.CollectionUtils;
@@ -329,7 +329,7 @@ public class ProcessTaskImportFromJsonApi extends PrivateJsonStreamApiComponentB
                                             }
                                             processTaskStepContentVo.setProcessTaskId(processTask.getId());
                                             processTaskStepContentVo.setProcessTaskStepId(processTaskStep.getId());
-                                            processTaskStepContentVo.setType(ProcessTaskOperationType.STEP_COMMENT.getValue());
+                                            processTaskStepContentVo.setType(ProcessTaskStepOperationType.STEP_COMMENT.getValue());
                                             if (StringUtils.isNotBlank(source)) {
                                                 processTaskStepContentVo.setSource(source);
                                             }

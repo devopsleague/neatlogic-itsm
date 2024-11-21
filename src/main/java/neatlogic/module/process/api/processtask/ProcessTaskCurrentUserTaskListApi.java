@@ -8,7 +8,8 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.SlaStatus;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.agent.ProcessTaskAgentVo;
@@ -95,13 +96,13 @@ public class ProcessTaskCurrentUserTaskListApi extends PrivateApiComponentBase {
         List<Long> currentProcessTaskProcessableStepIdList = new ArrayList<>();
         List<ProcessTaskStepVo> currentProcessTaskStepList = processTaskMapper.getProcessTaskStepListByProcessTaskId(currentProcessTaskId);
         List<Long> currentProcessTaskStepIdList = currentProcessTaskStepList.stream().map(ProcessTaskStepVo::getId).collect(Collectors.toList());
-        Map<Long, Set<ProcessTaskOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder().addProcessTaskStepId(currentProcessTaskStepIdList).build().getOperateMap();
-        Set<ProcessTaskOperationType> processableOperationSet = new HashSet<>();
-        processableOperationSet.add(ProcessTaskOperationType.STEP_COMPLETE);
-        processableOperationSet.add(ProcessTaskOperationType.STEP_RECOVER);
-        processableOperationSet.add(ProcessTaskOperationType.STEP_ACCEPT);
-        processableOperationSet.add(ProcessTaskOperationType.STEP_START);
-        for (Map.Entry<Long, Set<ProcessTaskOperationType>> entry : operationTypeSetMap.entrySet()) {
+        Map<Long, Set<IOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder().addProcessTaskStepId(currentProcessTaskStepIdList).build().getOperateMap();
+        Set<IOperationType> processableOperationSet = new HashSet<>();
+        processableOperationSet.add(ProcessTaskStepOperationType.STEP_COMPLETE);
+        processableOperationSet.add(ProcessTaskStepOperationType.STEP_RECOVER);
+        processableOperationSet.add(ProcessTaskStepOperationType.STEP_ACCEPT);
+        processableOperationSet.add(ProcessTaskStepOperationType.STEP_START);
+        for (Map.Entry<Long, Set<IOperationType>> entry : operationTypeSetMap.entrySet()) {
             if (entry.getValue().removeAll(processableOperationSet)) {
                 currentProcessTaskProcessableStepIdList.add(entry.getKey());
             }

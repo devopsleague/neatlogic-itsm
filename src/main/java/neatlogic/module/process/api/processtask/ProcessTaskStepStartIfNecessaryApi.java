@@ -5,7 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.restful.annotation.Description;
 import neatlogic.framework.restful.annotation.Input;
@@ -54,21 +55,21 @@ public class ProcessTaskStepStartIfNecessaryApi extends PrivateApiComponentBase 
     public Object myDoService(JSONObject jsonObj) throws Exception {
         Long processTaskId = jsonObj.getLong("processTaskId");
         Long processTaskStepId = jsonObj.getLong("processTaskStepId");
-        Map<Long, Set<ProcessTaskOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder()
+        Map<Long, Set<IOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder()
                 .addProcessTaskId(processTaskId)
                 .addProcessTaskStepId(processTaskStepId)
-                .addOperationType(ProcessTaskOperationType.STEP_START)
-                .addOperationType(ProcessTaskOperationType.STEP_ACCEPT)
+                .addOperationType(ProcessTaskStepOperationType.STEP_START)
+                .addOperationType(ProcessTaskStepOperationType.STEP_ACCEPT)
                 .build()
                 .getOperateMap();
-        Set<ProcessTaskOperationType> processTaskOperationTypeList = operationTypeSetMap.get(processTaskStepId);
+        Set<IOperationType> processTaskOperationTypeList = operationTypeSetMap.get(processTaskStepId);
         if (CollectionUtils.isNotEmpty(processTaskOperationTypeList)) {
-            if (processTaskOperationTypeList.contains(ProcessTaskOperationType.STEP_ACCEPT)) {
-                jsonObj.put("action", ProcessTaskOperationType.STEP_ACCEPT.getValue());
+            if (processTaskOperationTypeList.contains(ProcessTaskStepOperationType.STEP_ACCEPT)) {
+                jsonObj.put("action", ProcessTaskStepOperationType.STEP_ACCEPT.getValue());
                 System.out.println("jsonObj = " + jsonObj);
                 processTaskService.startProcessTaskStep(jsonObj);
-            } else if (processTaskOperationTypeList.contains(ProcessTaskOperationType.STEP_START)) {
-                jsonObj.put("action", ProcessTaskOperationType.STEP_START.getValue());
+            } else if (processTaskOperationTypeList.contains(ProcessTaskStepOperationType.STEP_START)) {
+                jsonObj.put("action", ProcessTaskStepOperationType.STEP_START.getValue());
                 System.out.println("jsonObj = " + jsonObj);
                 processTaskService.startProcessTaskStep(jsonObj);
             }

@@ -7,9 +7,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.constvalue.SystemUser;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.ProcessStepType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.constvalue.ProcessTaskStepStatus;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
 import neatlogic.framework.process.exception.process.ProcessStepHandlerNotFoundException;
@@ -94,9 +92,9 @@ public class ProcessTaskStepListApi extends PrivateApiComponentBase {
         // 其他处理步骤
         if (CollectionUtils.isNotEmpty(resultList)) {
             List<Long> processTaskStepIdList = resultList.stream().map(ProcessTaskStepVo::getId).collect(Collectors.toList());
-            Map<Long, Set<ProcessTaskOperationType>> operateMap = new ProcessAuthManager.Builder()
+            Map<Long, Set<IOperationType>> operateMap = new ProcessAuthManager.Builder()
                     .addProcessTaskStepId(processTaskStepIdList)
-                    .addOperationType(ProcessTaskOperationType.STEP_VIEW)
+                    .addOperationType(ProcessTaskStepOperationType.STEP_VIEW)
                     .build()
                     .getOperateMap();
             for (ProcessTaskStepVo processTaskStepVo : resultList) {
@@ -105,8 +103,8 @@ public class ProcessTaskStepListApi extends PrivateApiComponentBase {
                 if (handler == null) {
                     throw new ProcessStepUtilHandlerNotFoundException(processTaskStepVo.getHandler());
                 }
-                Set<ProcessTaskOperationType> processTaskStepOperateSet = operateMap.get(processTaskStepVo.getId());
-                if (CollectionUtils.isNotEmpty(processTaskStepOperateSet) && processTaskStepOperateSet.contains(ProcessTaskOperationType.STEP_VIEW)) {
+                Set<IOperationType> processTaskStepOperateSet = operateMap.get(processTaskStepVo.getId());
+                if (CollectionUtils.isNotEmpty(processTaskStepOperateSet) && processTaskStepOperateSet.contains(ProcessTaskStepOperationType.STEP_VIEW)) {
                     processTaskStepVo.setIsView(1);
                     if (!Objects.equals(processTaskStepVo.getId(), startProcessTaskStepVo.getId())) {
                         getProcessTaskStepDetail(processTaskStepVo);
@@ -138,14 +136,14 @@ public class ProcessTaskStepListApi extends PrivateApiComponentBase {
         startProcessTaskStepVo.setSlaTimeList(processTaskService.getSlaTimeListByProcessTaskStepId(startProcessTaskStepVo.getId()));
         // 步骤评论列表
         List<String> typeList = new ArrayList<>();
-        typeList.add(ProcessTaskOperationType.STEP_COMMENT.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_COMPLETE.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_BACK.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMMENT.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_BACK.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_RETREAT.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_TRANSFER.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_REAPPROVAL.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_REAPPROVAL.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_START.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_TRANSFER.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_TRANSFER.getValue());
         startProcessTaskStepVo.setCommentList(
                 processTaskService.getProcessTaskStepReplyListByProcessTaskStepId(startProcessTaskStepVo.getId(), typeList));
         //任务列表
@@ -167,14 +165,14 @@ public class ProcessTaskStepListApi extends PrivateApiComponentBase {
         processTaskStepVo.setHandlerStepInfo(processStepUtilHandler.getNonStartStepInfo(processTaskStepVo));
         // 步骤评论列表
         List<String> typeList = new ArrayList<>();
-        typeList.add(ProcessTaskOperationType.STEP_COMMENT.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_COMPLETE.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_BACK.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMMENT.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_BACK.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_RETREAT.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_TRANSFER.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_REAPPROVAL.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_REAPPROVAL.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_START.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_TRANSFER.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_TRANSFER.getValue());
         processTaskStepVo.setCommentList(
                 processTaskService.getProcessTaskStepReplyListByProcessTaskStepId(processTaskStepVo.getId(), typeList));
         processTaskStepVo.setActionList(processTaskService.getProcessTaskActionListByProcessTaskStepId(processTaskStepVo.getId()));

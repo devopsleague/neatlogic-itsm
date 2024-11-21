@@ -1,28 +1,23 @@
 package neatlogic.module.process.api.processtask;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
+import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
+import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
+import neatlogic.module.process.service.ProcessTaskService;
 import org.apache.commons.collections4.MapUtils;
 import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.dto.ProcessTaskVo;
-import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.Description;
-import neatlogic.framework.restful.annotation.Input;
-import neatlogic.framework.restful.annotation.OperationType;
-import neatlogic.framework.restful.annotation.Output;
-import neatlogic.framework.restful.annotation.Param;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import neatlogic.module.process.service.ProcessTaskService;
 
 import javax.annotation.Resource;
 
@@ -84,7 +79,7 @@ public class ProcessTaskFormApi extends PrivateApiComponentBase {
         processTaskService.setProcessTaskFormInfo(processTaskVo);
         if (MapUtils.isNotEmpty(processTaskVo.getFormConfig())) {
             if (processTaskStepId != null) {
-                if (new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskOperationType.STEP_VIEW).build().check()) {
+                if (new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskStepOperationType.STEP_VIEW).build().check()) {
                     /** 查出暂存数据中的表单数据 **/
                     ProcessTaskStepVo processTaskStepVo = new ProcessTaskStepVo();
                     processTaskStepVo.setId(processTaskStepId);

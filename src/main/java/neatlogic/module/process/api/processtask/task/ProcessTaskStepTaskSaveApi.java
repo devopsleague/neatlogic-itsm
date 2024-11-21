@@ -167,7 +167,7 @@ public class ProcessTaskStepTaskSaveApi extends PrivateApiComponentBase {
         }
 
         //第二步 校验执行权限
-        new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskOperationType.TASK_CREATE)
+        new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskStepOperationType.TASK_CREATE)
                 .build()
                 .checkAndNoPermissionThrowException();
 

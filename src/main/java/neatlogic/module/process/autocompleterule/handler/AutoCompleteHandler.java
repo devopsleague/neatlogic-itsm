@@ -23,16 +23,16 @@ import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.dto.UserVo;
 import neatlogic.framework.process.autocompleterule.core.IAutoCompleteRuleHandler;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepStatus;
 import neatlogic.framework.process.constvalue.ProcessUserType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.framework.process.dto.ProcessTaskStepInOperationVo;
 import neatlogic.framework.process.dto.ProcessTaskStepUserVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
 import neatlogic.framework.process.stephandler.core.*;
 import neatlogic.framework.service.AuthenticationInfoService;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -96,7 +96,7 @@ public class AutoCompleteHandler implements IAutoCompleteRuleHandler {
                     ProcessTaskStepInOperationVo processTaskStepInOperationVo = new ProcessTaskStepInOperationVo(
                             currentProcessTaskStepVo.getProcessTaskId(),
                             currentProcessTaskStepVo.getId(),
-                            ProcessTaskOperationType.STEP_COMPLETE.getValue()
+                            ProcessTaskStepOperationType.STEP_COMPLETE.getValue()
                     );
                     IProcessStepInternalHandler processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(currentProcessTaskStepVo.getHandler());
                     if (processStepInternalHandler == null) {

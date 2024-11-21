@@ -493,7 +493,7 @@ public class ProcessTaskAutomaticServiceImpl implements ProcessTaskAutomaticServ
                     List<Long> nextStepIdList = processTaskMapper.getToProcessTaskStepIdListByFromIdAndType(currentProcessTaskStepVo.getId(), ProcessFlowDirection.FORWARD.getValue());
 //                    currentProcessTaskStepVo.getParamObj().put("nextStepId", nextStepIdList.get(0));
                     JSONObject jsonParam = currentProcessTaskStepVo.getParamObj();
-                    jsonParam.put("action", ProcessTaskOperationType.STEP_COMPLETE.getValue());
+                    jsonParam.put("action", ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
                     jsonParam.put("nextStepId", nextStepIdList.get(0));
                     jsonParam.put(ProcessTaskAuditDetailType.AUTOMATICINFO.getParamName(), data);
                     IProcessStepHandler processHandler = ProcessStepHandlerFactory.getHandler(currentProcessTaskStepVo.getHandler());
@@ -618,7 +618,7 @@ public class ProcessTaskAutomaticServiceImpl implements ProcessTaskAutomaticServ
                 List<Long> nextStepIdList = processTaskMapper.getToProcessTaskStepIdListByFromIdAndType(currentProcessTaskStepVo.getId(), ProcessFlowDirection.FORWARD.getValue());
 //                currentProcessTaskStepVo.getParamObj().put("nextStepId", nextStepIdList.get(0));
                 JSONObject jsonParam = currentProcessTaskStepVo.getParamObj();
-                jsonParam.put("action", ProcessTaskOperationType.STEP_COMPLETE.getValue());
+                jsonParam.put("action", ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
                 jsonParam.put("nextStepId", nextStepIdList.get(0));
                 jsonParam.put(ProcessTaskAuditDetailType.AUTOMATICINFO.getParamName(), data);
                 IProcessStepHandler processHandler = ProcessStepHandlerFactory.getHandler(currentProcessTaskStepVo.getHandler());
@@ -765,7 +765,7 @@ public class ProcessTaskAutomaticServiceImpl implements ProcessTaskAutomaticServ
                 if (processHandler != null) {
                     processStepHandlerUtil.saveStepRemind(currentProcessTaskStepVo, nextProcessTaskStepVo.getId(), failedReason, ProcessTaskStepRemindType.AUTOMATIC_ERROR);
                     JSONObject jsonParam = currentProcessTaskStepVo.getParamObj();
-                    jsonParam.put("action", ProcessTaskOperationType.STEP_BACK.getValue());
+                    jsonParam.put("action", ProcessTaskStepOperationType.STEP_BACK.getValue());
                     jsonParam.put("nextStepId", nextProcessTaskStepVo.getId());
                     jsonParam.put("content", failedReason);
                     jsonParam.put(ProcessTaskAuditDetailType.AUTOMATICINFO.getParamName(), automaticInfo);
@@ -778,7 +778,7 @@ public class ProcessTaskAutomaticServiceImpl implements ProcessTaskAutomaticServ
             processStepHandlerUtil.saveStepRemind(currentProcessTaskStepVo, nextStepIdList.get(0), failedReason, ProcessTaskStepRemindType.AUTOMATIC_ERROR);
 //            currentProcessTaskStepVo.getParamObj().put("nextStepId", nextStepIdList.get(0));
             JSONObject jsonParam = currentProcessTaskStepVo.getParamObj();
-            jsonParam.put("action", ProcessTaskOperationType.STEP_COMPLETE.getValue());
+            jsonParam.put("action", ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
             jsonParam.put("nextStepId", nextStepIdList.get(0));
             jsonParam.put(ProcessTaskAuditDetailType.AUTOMATICINFO.getParamName(), automaticInfo);
             processHandler.autoComplete(currentProcessTaskStepVo);

@@ -12,9 +12,9 @@ import neatlogic.framework.process.audithandler.core.IProcessTaskStepAuditDetail
 import neatlogic.framework.process.audithandler.core.ProcessTaskAuditDetailTypeFactory;
 import neatlogic.framework.process.audithandler.core.ProcessTaskStepAuditDetailHandlerFactory;
 import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.constvalue.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepAuditDetailVo;
 import neatlogic.framework.process.dto.ProcessTaskStepAuditVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
@@ -22,6 +22,8 @@ import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.service.ProcessTaskService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -92,10 +94,10 @@ public class ProcessTaskAuditListApi extends PrivateApiComponentBase {
         Long[] processTaskStepIds = new Long[processTaskStepIdList.size()];
         processTaskStepIdList.toArray(processTaskStepIds);
         builder.addProcessTaskStepId(processTaskStepIds)
-                .addOperationType(ProcessTaskOperationType.STEP_VIEW);
+                .addOperationType(ProcessTaskStepOperationType.STEP_VIEW);
         List<ProcessTaskStepVo> processTaskStepList = processTaskMapper.getProcessTaskStepListByIdList(processTaskStepIdList);
         processTaskStepMap = processTaskStepList.stream().collect(Collectors.toMap(ProcessTaskStepVo::getId, e -> e));
-        Map<Long, Set<ProcessTaskOperationType>> operateMap = builder.build().getOperateMap();
+        Map<Long, Set<IOperationType>> operateMap = builder.build().getOperateMap();
         if (!operateMap.computeIfAbsent(processTaskId, k -> new HashSet<>()).contains(ProcessTaskOperationType.PROCESSTASK_VIEW)) {
             return resultList;
         }
@@ -103,7 +105,7 @@ public class ProcessTaskAuditListApi extends PrivateApiComponentBase {
         for (ProcessTaskStepAuditVo processTaskStepAudit : processTaskStepAuditList) {
             if (processTaskStepAudit.getProcessTaskStepId() != null) {
                 // 判断当前用户是否有权限查看该节点信息
-                if (!operateMap.computeIfAbsent(processTaskStepAudit.getProcessTaskStepId(), k -> new HashSet<>()).contains(ProcessTaskOperationType.STEP_VIEW)) {
+                if (!operateMap.computeIfAbsent(processTaskStepAudit.getProcessTaskStepId(), k -> new HashSet<>()).contains(ProcessTaskStepOperationType.STEP_VIEW)) {
                     continue;
                 }
                 ProcessTaskStepVo processTaskStepVo = processTaskStepMap.get(processTaskStepAudit.getProcessTaskStepId());

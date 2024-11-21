@@ -5,7 +5,7 @@ import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.ValueTextVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.IOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
@@ -61,10 +61,10 @@ public class ProcessTaskStepActionListApi extends PrivateApiComponentBase {
             customButtonMap = ProcessStepInternalHandlerFactory.getHandler().getCustomButtonMapByConfigHashAndHandler(processTaskStepVo.getConfigHash(), processTaskStepVo.getHandler());
         }
         List<ValueTextVo> resultList = new ArrayList<>();
-        Map<Long, Set<ProcessTaskOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder()
+        Map<Long, Set<IOperationType>> operationTypeSetMap = new ProcessAuthManager.Builder()
             .addProcessTaskId(processTaskId).addProcessTaskStepId(processTaskStepId).build().getOperateMap();
-        for (Map.Entry<Long, Set<ProcessTaskOperationType>> entry : operationTypeSetMap.entrySet()) {
-            for (ProcessTaskOperationType operationType : entry.getValue()) {
+        for (Map.Entry<Long, Set<IOperationType>> entry : operationTypeSetMap.entrySet()) {
+            for (IOperationType operationType : entry.getValue()) {
                 String text = customButtonMap.get(operationType.getValue());
                 if (StringUtils.isBlank(text)) {
                     text = operationType.getText();

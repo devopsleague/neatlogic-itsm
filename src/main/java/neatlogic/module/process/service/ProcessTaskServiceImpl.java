@@ -1141,7 +1141,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
      */
     @Override
     public boolean checkOperationAuthIsConfigured(ProcessTaskStepVo processTaskStepVo, String owner, String reporter,
-                                                  ProcessTaskOperationType operationType, String userUuid) {
+                                                  IOperationType operationType, String userUuid) {
         JSONArray authorityList = null;
         String stepConfig = selectContentByHashMapper.getProcessTaskStepConfigByHash(processTaskStepVo.getConfigHash());
         Integer enableAuthority = (Integer) JSONPath.read(stepConfig, "enableAuthority");
@@ -1178,7 +1178,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
      * @return 是否拥有权限
      */
     @Override
-    public boolean checkOperationAuthIsConfigured(ProcessTaskVo processTaskVo, ProcessTaskOperationType operationType,
+    public boolean checkOperationAuthIsConfigured(ProcessTaskVo processTaskVo, IOperationType operationType,
                                                   String userUuid) {
         String config = selectContentByHashMapper.getProcessTaskConfigStringByHash(processTaskVo.getConfigHash());
         JSONArray authorityList = (JSONArray) JSONPath.read(config, "process.processConfig.authorityList");
@@ -1191,7 +1191,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
     }
 
     private boolean checkOperationAuthIsConfigured(Long processTaskId, Long processTaskStepId, String owner,
-                                                   String reporter, ProcessTaskOperationType operationType, JSONArray authorityList, String userUuid) {
+                                                   String reporter, IOperationType operationType, JSONArray authorityList, String userUuid) {
         for (int i = 0; i < authorityList.size(); i++) {
             JSONObject authorityObj = authorityList.getJSONObject(i);
             String action = authorityObj.getString("action");
@@ -1306,7 +1306,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
                 if (handler != null) {
                     if (ProcessStepMode.MT == handler.getMode()) {// 手动处理节点
                         if (checkOperationAuthIsConfigured(fromStep, processTaskVo.getOwner(), processTaskVo.getReporter(),
-                                ProcessTaskOperationType.STEP_RETREAT, userUuid)) {
+                                ProcessTaskStepOperationType.STEP_RETREAT, userUuid)) {
                             resultList.add(fromStep);
                         }
                     } else {// 自动处理节点，继续找前置节点
@@ -1383,7 +1383,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
                 continue;
             }
             if (checkOperationAuthIsConfigured(stepVo, processTaskVo.getOwner(), processTaskVo.getReporter(),
-                    ProcessTaskOperationType.STEP_TRANSFER, userUuid)) {
+                    ProcessTaskStepOperationType.STEP_TRANSFER, userUuid)) {
                 resultSet.add(stepVo);
             }
         }
@@ -2014,12 +2014,12 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
         processTaskStepVo.setHandlerStepInfo(processStepUtilHandler.getNonStartStepInfo(processTaskStepVo));
         // 步骤评论列表
         List<String> typeList = new ArrayList<>();
-        typeList.add(ProcessTaskOperationType.STEP_COMMENT.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_COMPLETE.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_BACK.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMMENT.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_BACK.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_RETREAT.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_TRANSFER.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_REAPPROVAL.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_REAPPROVAL.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_START.getValue());
         processTaskStepVo.setCommentList(getProcessTaskStepReplyListByProcessTaskStepId(processTaskStepId, typeList));
 
@@ -2440,49 +2440,49 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
         List<ProcessTaskStepVo> processTaskStepList = processTaskMapper.getProcessTaskStepBaseInfoByProcessTaskId(processTaskId);
         List<Long> processTaskStepIdList = processTaskStepList.stream().map(ProcessTaskStepVo::getId).collect(Collectors.toList());
         ProcessAuthManager.Builder builder = new ProcessAuthManager.Builder().addProcessTaskId(processTaskId).addProcessTaskStepId(processTaskStepIdList);
-        ProcessTaskOperationType actionType = null;
-        if (ProcessTaskOperationType.STEP_ACCEPT.getValue().equals(action)) {
-            actionType = ProcessTaskOperationType.STEP_ACCEPT;
+        ProcessTaskStepOperationType actionType = null;
+        if (ProcessTaskStepOperationType.STEP_ACCEPT.getValue().equals(action)) {
+            actionType = ProcessTaskStepOperationType.STEP_ACCEPT;
             builder.addOperationType(actionType);
-        } else if (ProcessTaskOperationType.STEP_START.getValue().equals(action)) {
-            actionType = ProcessTaskOperationType.STEP_START;
+        } else if (ProcessTaskStepOperationType.STEP_START.getValue().equals(action)) {
+            actionType = ProcessTaskStepOperationType.STEP_START;
             builder.addOperationType(actionType);
-        } else if (ProcessTaskOperationType.STEP_COMPLETE.getValue().equals(action)) {
-            actionType = ProcessTaskOperationType.STEP_COMPLETE;
+        } else if (ProcessTaskStepOperationType.STEP_COMPLETE.getValue().equals(action)) {
+            actionType = ProcessTaskStepOperationType.STEP_COMPLETE;
             builder.addOperationType(actionType);
-        } else if (ProcessTaskOperationType.STEP_RECOVER.getValue().equals(action)) {
-            actionType = ProcessTaskOperationType.STEP_RECOVER;
+        } else if (ProcessTaskStepOperationType.STEP_RECOVER.getValue().equals(action)) {
+            actionType = ProcessTaskStepOperationType.STEP_RECOVER;
             builder.addOperationType(actionType);
-        } else if (ProcessTaskOperationType.STEP_PAUSE.getValue().equals(action)) {
-            actionType = ProcessTaskOperationType.STEP_PAUSE;
+        } else if (ProcessTaskStepOperationType.STEP_PAUSE.getValue().equals(action)) {
+            actionType = ProcessTaskStepOperationType.STEP_PAUSE;
             builder.addOperationType(actionType);
         } else {
-            builder.addOperationType(ProcessTaskOperationType.STEP_ACCEPT);
-            builder.addOperationType(ProcessTaskOperationType.STEP_START);
-            builder.addOperationType(ProcessTaskOperationType.STEP_COMPLETE);
-            builder.addOperationType(ProcessTaskOperationType.STEP_RECOVER);
-            builder.addOperationType(ProcessTaskOperationType.STEP_PAUSE);
+            builder.addOperationType(ProcessTaskStepOperationType.STEP_ACCEPT);
+            builder.addOperationType(ProcessTaskStepOperationType.STEP_START);
+            builder.addOperationType(ProcessTaskStepOperationType.STEP_COMPLETE);
+            builder.addOperationType(ProcessTaskStepOperationType.STEP_RECOVER);
+            builder.addOperationType(ProcessTaskStepOperationType.STEP_PAUSE);
         }
         String userUuid = UserContext.get().getUserUuid(true);
         AuthenticationInfoVo authenticationInfoVo = UserContext.get().getAuthenticationInfoVo();
-        Map<Long, Set<ProcessTaskOperationType>> operationTypeSetMap = builder.build().getOperateMap();
+        Map<Long, Set<IOperationType>> operationTypeSetMap = builder.build().getOperateMap();
         for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
-            Set<ProcessTaskOperationType> set = operationTypeSetMap.get(processTaskStepVo.getId());
+            Set<IOperationType> set = operationTypeSetMap.get(processTaskStepVo.getId());
             if (CollectionUtils.isNotEmpty(set)) {
                 if (actionType != null) {
                     if (set.contains(actionType)) {
                         resultList.add(processTaskStepVo);
                     }
                 } else {
-                    if (set.contains(ProcessTaskOperationType.STEP_ACCEPT)) {
+                    if (set.contains(ProcessTaskStepOperationType.STEP_ACCEPT)) {
                         resultList.add(processTaskStepVo);
-                    } else if (set.contains(ProcessTaskOperationType.STEP_START)) {
+                    } else if (set.contains(ProcessTaskStepOperationType.STEP_START)) {
                         resultList.add(processTaskStepVo);
-                    } else if (set.contains(ProcessTaskOperationType.STEP_COMPLETE)) {
+                    } else if (set.contains(ProcessTaskStepOperationType.STEP_COMPLETE)) {
                         resultList.add(processTaskStepVo);
-                    } else if (set.contains(ProcessTaskOperationType.STEP_RECOVER)) {
+                    } else if (set.contains(ProcessTaskStepOperationType.STEP_RECOVER)) {
                         resultList.add(processTaskStepVo);
-                    } else if (set.contains(ProcessTaskOperationType.STEP_PAUSE)) {
+                    } else if (set.contains(ProcessTaskStepOperationType.STEP_PAUSE)) {
                         resultList.add(processTaskStepVo);
                     }
                 }
@@ -2877,7 +2877,7 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
         }
         String action = paramObj.getString("action");
         processTaskStepVo.getParamObj().put("source", paramObj.getString("source"));
-        if (ProcessTaskOperationType.STEP_ACCEPT.getValue().equals(action)) {
+        if (ProcessTaskStepOperationType.STEP_ACCEPT.getValue().equals(action)) {
             handler.accept(processTaskStepVo);
         }
         handler.start(processTaskStepVo);
@@ -2938,18 +2938,18 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
                                 || ChangeProcessStepHandlerType.CHANGEHANDLE.getHandler().equals(currentStep.getHandler())) {
                             throw new ProcessTaskStepMustBeManualException(currentStep.getProcessTaskId(), currentStep.getName());
                         }
-                        Map<Long, Set<ProcessTaskOperationType>> auth = checkProcessTaskStepCompleteAuth(user, authenticationInfo, currentStep);
+                        Map<Long, Set<IOperationType>> auth = checkProcessTaskStepCompleteAuth(user, authenticationInfo, currentStep);
                         if (MapUtils.isEmpty(auth) || auth.values().stream().findFirst().get().isEmpty()) {
                             noAuthProcessTaskIdList.add(currentStep.getProcessTaskId());
                             continue;
                         }
-                        ProcessTaskOperationType operationType = auth.values().stream().findFirst().get().stream().findFirst().get();
-                        if (ProcessTaskOperationType.STEP_ACCEPT.getValue().equals(operationType.getValue())
-                                || ProcessTaskOperationType.STEP_START.getValue().equals(operationType.getValue())) {
+                        IOperationType operationType = auth.values().stream().findFirst().get().stream().findFirst().get();
+                        if (ProcessTaskStepOperationType.STEP_ACCEPT.getValue().equals(operationType.getValue())
+                                || ProcessTaskStepOperationType.STEP_START.getValue().equals(operationType.getValue())) {
                             JSONObject param = new JSONObject();
                             param.put("processTaskId", currentStep.getProcessTaskId());
                             param.put("processTaskStepId", currentStep.getId());
-                            if (ProcessTaskOperationType.STEP_ACCEPT.getValue().equals(operationType.getValue())) {
+                            if (ProcessTaskStepOperationType.STEP_ACCEPT.getValue().equals(operationType.getValue())) {
                                 param.put("action", "accept");
                             } else {
                                 param.put("action", "start");
@@ -2988,14 +2988,14 @@ public class ProcessTaskServiceImpl implements ProcessTaskService, IProcessTaskC
      * @param authenticationInfo 处理人权限
      * @param processTaskStepVo  工单步骤
      */
-    private Map<Long, Set<ProcessTaskOperationType>> checkProcessTaskStepCompleteAuth(UserVo user, AuthenticationInfoVo authenticationInfo, ProcessTaskStepVo processTaskStepVo) {
+    private Map<Long, Set<IOperationType>> checkProcessTaskStepCompleteAuth(UserVo user, AuthenticationInfoVo authenticationInfo, ProcessTaskStepVo processTaskStepVo) {
         UserContext.init(user, authenticationInfo, SystemUser.SYSTEM.getTimezone());
         ProcessAuthManager.Builder builder = new ProcessAuthManager.Builder();
         builder.addProcessTaskId(processTaskStepVo.getProcessTaskId());
         builder.addProcessTaskStepId(processTaskStepVo.getId());
-        return builder.addOperationType(ProcessTaskOperationType.STEP_START)
-                .addOperationType(ProcessTaskOperationType.STEP_ACCEPT)
-                .addOperationType(ProcessTaskOperationType.STEP_COMPLETE)
+        return builder.addOperationType(ProcessTaskStepOperationType.STEP_START)
+                .addOperationType(ProcessTaskStepOperationType.STEP_ACCEPT)
+                .addOperationType(ProcessTaskStepOperationType.STEP_COMPLETE)
                 .build().getOperateMap();
     }
 

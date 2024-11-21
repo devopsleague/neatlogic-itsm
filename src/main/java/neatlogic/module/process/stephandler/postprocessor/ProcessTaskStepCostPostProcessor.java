@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.GroupSearch;
 import neatlogic.framework.process.constvalue.IOperationType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.ProcessUserType;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.stephandler.core.IProcessTaskOperatePostProcessor;
@@ -56,24 +56,24 @@ public class ProcessTaskStepCostPostProcessor implements IProcessTaskOperatePost
         Long processTaskStepId = currentProcessTaskStepVo.getId();
         JSONObject otherParam = currentProcessTaskStepVo.getParamObj();
         List<IOperationType> list = new ArrayList<>();
-        list.add(ProcessTaskOperationType.STEP_ACTIVE);
-        list.add(ProcessTaskOperationType.STEP_ACCEPT);
-        list.add(ProcessTaskOperationType.STEP_START);
-        list.add(ProcessTaskOperationType.STEP_COMPLETE);
-        list.add(ProcessTaskOperationType.STEP_BACK);
-        list.add(ProcessTaskOperationType.STEP_PAUSE);
-        list.add(ProcessTaskOperationType.STEP_TRANSFER);
-        list.add(ProcessTaskOperationType.STEP_RECOVER);
-        list.add(ProcessTaskOperationType.STEP_RETREAT);
-        list.add(ProcessTaskOperationType.STEP_REDO);
-        list.add(ProcessTaskOperationType.STEP_REAPPROVAL);
+        list.add(ProcessTaskStepOperationType.STEP_ACTIVE);
+        list.add(ProcessTaskStepOperationType.STEP_ACCEPT);
+        list.add(ProcessTaskStepOperationType.STEP_START);
+        list.add(ProcessTaskStepOperationType.STEP_COMPLETE);
+        list.add(ProcessTaskStepOperationType.STEP_BACK);
+        list.add(ProcessTaskStepOperationType.STEP_PAUSE);
+        list.add(ProcessTaskStepOperationType.STEP_TRANSFER);
+        list.add(ProcessTaskStepOperationType.STEP_RECOVER);
+        list.add(ProcessTaskStepOperationType.STEP_RETREAT);
+        list.add(ProcessTaskStepOperationType.STEP_REDO);
+        list.add(ProcessTaskStepOperationType.STEP_REAPPROVAL);
         if (list.contains(operationType)) {
             Date operateTime = otherParam.getDate("operateTime");
             if (operateTime == null) {
                 operateTime = new Date();
             }
             String stepStatus = currentProcessTaskStepVo.getStatus();
-            if (ProcessTaskOperationType.STEP_COMPLETE == operationType || ProcessTaskOperationType.STEP_BACK == operationType) {
+            if (ProcessTaskStepOperationType.STEP_COMPLETE == operationType || ProcessTaskStepOperationType.STEP_BACK == operationType) {
                 List<ProcessTaskStepCostWorkerVo> workerList = new ArrayList<>();
                 List<ProcessTaskStepUserVo> processTaskStepUserList = processTaskMapper.getProcessTaskStepUserByStepId(processTaskStepId, ProcessUserType.MAJOR.getValue());
                 if (CollectionUtils.isNotEmpty(processTaskStepUserList)) {

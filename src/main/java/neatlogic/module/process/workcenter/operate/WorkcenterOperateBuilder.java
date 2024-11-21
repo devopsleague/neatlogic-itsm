@@ -1,11 +1,12 @@
 package neatlogic.module.process.workcenter.operate;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStatus;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskVo;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Comparator;
@@ -25,7 +26,7 @@ public class WorkcenterOperateBuilder {
         if (CollectionUtils.isNotEmpty(handleArray)) {
             isEnable = 1;
         }
-        JSONObject operateJson = new WorkcenterBuildOperateBuilder().setOperate(ProcessTaskOperationType.STEP_WORK).setSort(1)
+        JSONObject operateJson = new WorkcenterBuildOperateBuilder().setOperate(ProcessTaskStepOperationType.STEP_WORK).setSort(1)
                 .setIsEnable(isEnable).setHandleArray(handleArray).build();
         operateJson.put("text", "处理");
         operateArray.add(operateJson);
