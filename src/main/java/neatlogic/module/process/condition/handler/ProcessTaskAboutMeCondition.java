@@ -87,7 +87,7 @@ public class ProcessTaskAboutMeCondition extends ProcessTaskConditionBase implem
 
         mapSql.put("transferredOfMine", (sqlSb) -> {
             sqlSb.append(" ( ");
-            sqlSb.append(Expression.getExpressionSql(Expression.EQUAL.getExpression(), new ProcessTaskStepAuditSqlTable().getShortName(), ProcessTaskStepCostSqlTable.FieldEnum.START_OPERATE.getValue(), ProcessTaskOperationType.STEP_TRANSFER.getValue()));
+            sqlSb.append(Expression.getExpressionSql(Expression.EQUAL.getExpression(), new ProcessTaskStepAuditSqlTable().getShortName(), ProcessTaskStepCostSqlTable.FieldEnum.START_OPERATE.getValue(), ProcessTaskStepOperationType.STEP_TRANSFER.getValue()));
             sqlSb.append(" and ");
             sqlSb.append(Expression.getExpressionSql(Expression.EQUAL.getExpression(), new ProcessTaskStepAuditSqlTable().getShortName(), ProcessTaskStepCostSqlTable.FieldEnum.START_USER_UUID.getValue(), UserContext.get().getUserUuid(true)));
             sqlSb.append(" ) ");

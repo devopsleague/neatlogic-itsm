@@ -5,8 +5,8 @@ import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepDataType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepDataVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
@@ -79,7 +79,7 @@ public class ProcessTaskStepDraftSaveApi extends PrivateApiComponentBase {
         if (handler == null) {
             throw new ProcessStepUtilHandlerNotFoundException(processTaskStepVo.getHandler());
         }
-        new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskOperationType.STEP_SAVE)
+        new ProcessAuthManager.StepOperationChecker(processTaskStepId, ProcessTaskStepOperationType.STEP_SAVE)
                 .build()
                 .checkAndNoPermissionThrowException();
         ProcessTaskStepDataVo processTaskStepDataVo = new ProcessTaskStepDataVo();

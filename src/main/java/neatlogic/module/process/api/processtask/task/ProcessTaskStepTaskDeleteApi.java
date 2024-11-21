@@ -15,13 +15,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 
 package neatlogic.module.process.api.processtask.task;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ProcessTaskAuditType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskStepTaskMapper;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepTaskUserVo;
 import neatlogic.framework.process.dto.ProcessTaskStepTaskVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
@@ -32,12 +31,13 @@ import neatlogic.framework.process.notify.constvalue.ProcessTaskStepTaskNotifyTr
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;
-import neatlogic.module.process.service.ProcessTaskService;
-import neatlogic.module.process.service.IProcessStepHandlerUtil;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
-import com.alibaba.fastjson.JSONObject;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskStepTaskMapper;
+import neatlogic.module.process.service.IProcessStepHandlerUtil;
+import neatlogic.module.process.service.ProcessTaskService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,7 +96,7 @@ public class ProcessTaskStepTaskDeleteApi extends PrivateApiComponentBase {
             throw new ProcessTaskStepNotFoundException(stepTaskVo.getProcessTaskStepId().toString());
         }
         //校验执行权限
-        new ProcessAuthManager.StepOperationChecker(processTaskStepVo.getId(), ProcessTaskOperationType.TASK_DELETE)
+        new ProcessAuthManager.StepOperationChecker(processTaskStepVo.getId(), ProcessTaskStepOperationType.TASK_DELETE)
                 .build()
                 .checkAndNoPermissionThrowException();
         // 锁定当前流程

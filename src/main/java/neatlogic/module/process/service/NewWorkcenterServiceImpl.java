@@ -36,6 +36,7 @@ import neatlogic.framework.process.column.core.IProcessTaskColumn;
 import neatlogic.framework.process.column.core.ProcessTaskColumnFactory;
 import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.IProcessStepHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerFactory;
@@ -208,11 +209,11 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
                 for (ProcessTaskStepVo processStep : processTaskVo.getStepList()) {
                     builder.addProcessTaskStepId(processStep.getId());
                 }
-                Map<Long, Set<ProcessTaskOperationType>> operateTypeSetMap =
+                Map<Long, Set<IOperationType>> operateTypeSetMap =
                         builder.addOperationType(ProcessTaskOperationType.PROCESSTASK_ABORT)
                                 .addOperationType(ProcessTaskOperationType.PROCESSTASK_RECOVER)
                                 .addOperationType(ProcessTaskOperationType.PROCESSTASK_URGE)
-                                .addOperationType(ProcessTaskOperationType.STEP_WORK).build().getOperateMap();
+                                .addOperationType(ProcessTaskStepOperationType.STEP_WORK).build().getOperateMap();
 
                 processTaskVo.getParamObj().put("isHasProcessTaskAuth", isHasProcessTaskAuth);
                 taskJson = new JSONObject();
@@ -319,7 +320,7 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
      * @Params: [processTaskVo, operateTypeSetMap]
      * @Returns: com.alibaba.fastjson.JSONObject
      **/
-    private JSONObject getTaskOperate(ProcessTaskVo processTaskVo, Map<Long, Set<ProcessTaskOperationType>> operateTypeSetMap) {
+    private JSONObject getTaskOperate(ProcessTaskVo processTaskVo, Map<Long, Set<IOperationType>> operateTypeSetMap) {
         JSONObject action = new JSONObject();
         String processTaskStatus = processTaskVo.getStatus();
         boolean isHasAbort = false;
@@ -329,7 +330,7 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
         if ((ProcessTaskStatus.RUNNING.getValue().equals(processTaskStatus)
                 || ProcessTaskStatus.DRAFT.getValue().equals(processTaskStatus)
                 || ProcessTaskStatus.ABORTED.getValue().equals(processTaskStatus))) {
-            Set<ProcessTaskOperationType> operationTypeSet = operateTypeSetMap.get(processTaskVo.getId());
+            Set<IOperationType> operationTypeSet = operateTypeSetMap.get(processTaskVo.getId());
 
             if (CollectionUtils.isNotEmpty(operationTypeSet)) {
                 if (operationTypeSet.contains(ProcessTaskOperationType.PROCESSTASK_ABORT)) {
@@ -343,8 +344,8 @@ public class NewWorkcenterServiceImpl implements NewWorkcenterService {
                 }
             }
             for (ProcessTaskStepVo step : processTaskVo.getStepList()) {
-                Set<ProcessTaskOperationType> set = operateTypeSetMap.get(step.getId());
-                if (set != null && set.contains(ProcessTaskOperationType.STEP_WORK)) {
+                Set<IOperationType> set = operateTypeSetMap.get(step.getId());
+                if (set != null && set.contains(ProcessTaskStepOperationType.STEP_WORK)) {
                     JSONObject configJson = new JSONObject();
                     configJson.put("taskid", processTaskVo.getId());
                     configJson.put("stepid", step.getId());

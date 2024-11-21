@@ -6,9 +6,7 @@ import neatlogic.framework.common.constvalue.SystemUser;
 import neatlogic.framework.crossover.CrossoverServiceFactory;
 import neatlogic.framework.notify.crossover.INotifyServiceCrossoverService;
 import neatlogic.framework.notify.dto.InvokeNotifyPolicyConfigVo;
-import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.constvalue.ProcessTaskStatus;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.ProcessStepVo;
 import neatlogic.framework.process.dto.ProcessStepWorkerPolicyVo;
 import neatlogic.framework.process.dto.ProcessTaskStepDataVo;
@@ -17,6 +15,7 @@ import neatlogic.framework.process.dto.processconfig.AutomaticCallbackConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticIntervalCallbackConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticRequestConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticTimeWindowConfigVo;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerBase;
 import neatlogic.framework.process.util.ProcessConfigUtil;
@@ -55,7 +54,7 @@ public class AutomaticProcessUtilHandler extends ProcessStepInternalHandlerBase 
                         currentProcessTaskStepVo.getId(), currentProcessTaskStepVo.getHandler(), SystemUser.SYSTEM.getUserUuid()));
         JSONObject stepDataJson = stepDataVo.getData();
         boolean hasComplete =
-                new ProcessAuthManager.StepOperationChecker(currentProcessTaskStepVo.getId(), ProcessTaskOperationType.STEP_COMPLETE)
+                new ProcessAuthManager.StepOperationChecker(currentProcessTaskStepVo.getId(), ProcessTaskStepOperationType.STEP_COMPLETE)
                         .build().check();
         if (hasComplete) {// 有处理权限
             stepDataJson.put("isStepUser", 1);
@@ -179,20 +178,20 @@ public class AutomaticProcessUtilHandler extends ProcessStepInternalHandlerBase 
         JSONObject resultObj = new JSONObject();
 
         /** 授权 **/
-        ProcessTaskOperationType[] stepActions = {
-                ProcessTaskOperationType.STEP_VIEW,
-                ProcessTaskOperationType.STEP_TRANSFER
+        IOperationType[] stepActions = {
+                ProcessTaskStepOperationType.STEP_VIEW,
+                ProcessTaskStepOperationType.STEP_TRANSFER
         };
         JSONArray authorityList = configObj.getJSONArray("authorityList");
         JSONArray authorityArray = ProcessConfigUtil.regulateAuthorityList(authorityList, stepActions);
         resultObj.put("authorityList", authorityArray);
 
         /** 按钮映射 **/
-        ProcessTaskOperationType[] stepButtons = {
-                ProcessTaskOperationType.STEP_COMPLETE,
-                ProcessTaskOperationType.STEP_BACK,
+        IOperationType[] stepButtons = {
+                ProcessTaskStepOperationType.STEP_COMPLETE,
+                ProcessTaskStepOperationType.STEP_BACK,
                 ProcessTaskOperationType.PROCESSTASK_TRANSFER,
-                ProcessTaskOperationType.STEP_ACCEPT
+                ProcessTaskStepOperationType.STEP_ACCEPT
         };
         JSONArray customButtonList = configObj.getJSONArray("customButtonList");
         JSONArray customButtonArray = ProcessConfigUtil.regulateCustomButtonList(customButtonList, stepButtons);
@@ -216,9 +215,9 @@ public class AutomaticProcessUtilHandler extends ProcessStepInternalHandlerBase 
         JSONObject resultObj = new JSONObject();
 
         /** 授权 **/
-        ProcessTaskOperationType[] stepActions = {
-                ProcessTaskOperationType.STEP_VIEW,
-                ProcessTaskOperationType.STEP_TRANSFER
+        IOperationType[] stepActions = {
+                ProcessTaskStepOperationType.STEP_VIEW,
+                ProcessTaskStepOperationType.STEP_TRANSFER
         };
         JSONArray authorityList = null;
         Integer enableAuthority = configObj.getInteger("enableAuthority");
@@ -238,11 +237,11 @@ public class AutomaticProcessUtilHandler extends ProcessStepInternalHandlerBase 
         resultObj.put("notifyPolicyConfig", invokeNotifyPolicyConfigVo);
 
         /** 按钮映射列表 **/
-        ProcessTaskOperationType[] stepButtons = {
-                ProcessTaskOperationType.STEP_COMPLETE,
-                ProcessTaskOperationType.STEP_BACK,
+        IOperationType[] stepButtons = {
+                ProcessTaskStepOperationType.STEP_COMPLETE,
+                ProcessTaskStepOperationType.STEP_BACK,
                 ProcessTaskOperationType.PROCESSTASK_TRANSFER,
-                ProcessTaskOperationType.STEP_ACCEPT
+                ProcessTaskStepOperationType.STEP_ACCEPT
         };
         JSONArray customButtonList = configObj.getJSONArray("customButtonList");
         JSONArray customButtonArray = ProcessConfigUtil.regulateCustomButtonList(customButtonList, stepButtons);

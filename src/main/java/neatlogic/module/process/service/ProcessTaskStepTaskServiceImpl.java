@@ -22,6 +22,7 @@ import neatlogic.framework.dto.UserVo;
 import neatlogic.framework.file.dao.mapper.FileMapper;
 import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.process.constvalue.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskStepTaskMapper;
 import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
@@ -662,7 +663,7 @@ public class ProcessTaskStepTaskServiceImpl implements ProcessTaskStepTaskServic
     @Override
     public int checkIsReplyable(ProcessTaskVo processTaskVo, ProcessTaskStepVo processTaskStepVo, String stepTaskUserUuid, Long stepTaskUserId) throws ProcessTaskPermissionDeniedException {
         Long id = processTaskStepVo.getId();
-        ProcessTaskOperationType operationType = ProcessTaskOperationType.TASK_COMPLETE;
+        IOperationType operationType = ProcessTaskStepOperationType.TASK_COMPLETE;
         //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
         if (processTaskVo.getIsShow() == 0) {
             throw new ProcessTaskHiddenException();

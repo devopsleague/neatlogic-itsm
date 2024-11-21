@@ -13,6 +13,7 @@ import neatlogic.framework.process.dto.ProcessTaskStepUserVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.exception.operationauth.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.OperationAuthHandlerBase;
 import neatlogic.framework.process.operationauth.core.OperationAuthHandlerType;
 import neatlogic.framework.process.operationauth.core.TernaryPredicate;
@@ -30,8 +31,8 @@ import java.util.Objects;
 @Component
 public class StepOperateHandler extends OperationAuthHandlerBase {
 
-    private final Map<ProcessTaskOperationType,
-        TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<ProcessTaskOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>> operationBiPredicateMap = new HashMap<>();
+    private final Map<IOperationType,
+        TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<IOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>> operationBiPredicateMap = new HashMap<>();
 
     @Resource
     private UserMapper userMapper;
@@ -50,9 +51,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 3.userUuid用户是步骤的处理人或协助处理人
          * 4.userUuid用户在步骤权限设置中获得“查看节点信息”的授权
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_VIEW, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_VIEW, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_VIEW;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_VIEW;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 //判断当前用户是否有“工单管理权限”或者是系统用户，如果两者都没有，则提示“工单已隐藏”；
@@ -101,10 +102,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤转交权限逻辑：
          * 首先步骤状态是“已激活”，然后userUuid用户在步骤权限设置中获得“转交”的授权
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_TRANSFER,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_TRANSFER,
             (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                 Long id = processTaskStepVo.getId();
-                ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_TRANSFER;
+                ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_TRANSFER;
                 //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                 if (processTaskVo.getIsShow() == 0) {
                     operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -165,9 +166,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤接受权限逻辑：
          * 首先步骤状态是“已激活”且“待处理”，然后userUuid用户是步骤的待处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_ACCEPT, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_ACCEPT, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_ACCEPT;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_ACCEPT;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -257,9 +258,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤开始权限逻辑：
          * 首先步骤状态是“已激活”且“待处理”，然后userUuid用户是步骤的处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_START, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_START, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_START;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_START;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -321,9 +322,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤流转权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户是步骤的处理人，且步骤有前进（实线）方向的连线
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_COMPLETE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_COMPLETE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_COMPLETE;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_COMPLETE;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -388,9 +389,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤回退权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户是步骤的处理人，且步骤有回退（虚线）方向的连线
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_BACK, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_BACK, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_BACK;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_BACK;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -457,9 +458,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤暂存权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户是步骤的处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_SAVE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_SAVE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_SAVE;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_SAVE;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -520,13 +521,13 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤回复权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户是步骤的处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_COMMENT, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_COMMENT, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             String processTaskStepEnableComment = ConfigManager.getConfig(ItsmTenantConfig.PROCESS_TASK_STEP_ENABLE_COMMENT);
             if (!Objects.equals(processTaskStepEnableComment, "1")) {
                 return false;
             }
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_COMMENT;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_COMMENT;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -587,9 +588,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤暂停权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户在步骤权限设置中获得“暂停”的授权
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_PAUSE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_PAUSE, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_PAUSE;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_PAUSE;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -650,9 +651,9 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤恢复权限逻辑：
          * 首先步骤状态是“已激活”且“已挂起”，然后userUuid用户在步骤权限设置中获得“暂停”的授权
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_RECOVER, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_RECOVER, (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
             Long id = processTaskStepVo.getId();
-            ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_RECOVER;
+            ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_RECOVER;
             //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
             if (processTaskVo.getIsShow() == 0) {
                 operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -699,7 +700,7 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
                 return true;
             }
             //13.判断当前用户是否有当前步骤“暂停”操作权限，如果没有，则提示“您的'恢复'操作未获得授权”；
-            if (checkOperationAuthIsConfigured(processTaskVo, processTaskStepVo, ProcessTaskOperationType.STEP_PAUSE, userUuid)) {
+            if (checkOperationAuthIsConfigured(processTaskVo, processTaskStepVo, ProcessTaskStepOperationType.STEP_PAUSE, userUuid)) {
                 return true;
             }
             operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -711,10 +712,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤撤回权限逻辑：
          * 首先工单状态是“处理中”，步骤状态是“已完成”，然后userUuid用户在步骤权限设置中获得“撤回”的授权，当前步骤流转时激活步骤列表中有未完成的步骤
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_RETREAT,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_RETREAT,
             (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                 Long id = processTaskStepVo.getId();
-                ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_RETREAT;
+                ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_RETREAT;
                 //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                 if (processTaskVo.getIsShow() == 0) {
                     operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -769,10 +770,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤撤回权限逻辑：
          * 首先工单状态是“处理中”，步骤状态是“处理中”，然后userUuid用户是步骤处理人，当前步骤是由回退线操作激活的
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_REAPPROVAL,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_REAPPROVAL,
                 (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                     Long id = processTaskStepVo.getId();
-                    ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_REAPPROVAL;
+                    ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_REAPPROVAL;
                     //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                     if (processTaskVo.getIsShow() == 0) {
                         operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -856,10 +857,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤处理权限逻辑：
          * 首先步骤状态是“已激活”，然后userUuid用户是步骤的处理人或待处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.STEP_WORK,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.STEP_WORK,
             (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                 Long id = processTaskStepVo.getId();
-                ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_WORK;
+                ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.STEP_WORK;
                 //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                 if (processTaskVo.getIsShow() == 0) {
                     operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -919,10 +920,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤创建任务权限逻辑：
          * 首先步骤状态是“处理中”，然后userUuid用户是步骤的处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.TASK_CREATE,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.TASK_CREATE,
                 (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                     Long id = processTaskStepVo.getId();
-                    ProcessTaskOperationType operationType = ProcessTaskOperationType.TASK_CREATE;
+                    ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.TASK_CREATE;
                     //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                     if (processTaskVo.getIsShow() == 0) {
                         operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -984,10 +985,10 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
          * 判断userUuid用户是否有步骤删除任务权限逻辑：
          * userUuid用户是步骤的处理人
          */
-        operationBiPredicateMap.put(ProcessTaskOperationType.TASK_DELETE,
+        operationBiPredicateMap.put(ProcessTaskStepOperationType.TASK_DELETE,
                 (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                     Long id = processTaskStepVo.getId();
-                    ProcessTaskOperationType operationType = ProcessTaskOperationType.TASK_DELETE;
+                    ProcessTaskStepOperationType operationType = ProcessTaskStepOperationType.TASK_DELETE;
                     //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                     if (processTaskVo.getIsShow() == 0) {
                         operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -1049,7 +1050,7 @@ public class StepOperateHandler extends OperationAuthHandlerBase {
     }
 
     @Override
-    public Map<ProcessTaskOperationType, TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<ProcessTaskOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>>
+    public Map<IOperationType, TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<IOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>>
         getOperationBiPredicateMap() {
         return operationBiPredicateMap;
     }

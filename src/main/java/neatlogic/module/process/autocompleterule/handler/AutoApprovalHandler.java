@@ -131,7 +131,7 @@ public class AutoApprovalHandler implements IAutoCompleteRuleHandler {
                 ProcessTaskStepInOperationVo processTaskStepInOperationVo = new ProcessTaskStepInOperationVo(
                         currentProcessTaskStepVo.getProcessTaskId(),
                         currentProcessTaskStepVo.getId(),
-                        ProcessTaskOperationType.STEP_COMPLETE.getValue()
+                        ProcessTaskStepOperationType.STEP_COMPLETE.getValue()
                 );
                 IProcessStepInternalHandler processStepInternalHandler = ProcessStepInternalHandlerFactory.getHandler(currentProcessTaskStepVo.getHandler());
                 if (processStepInternalHandler == null) {

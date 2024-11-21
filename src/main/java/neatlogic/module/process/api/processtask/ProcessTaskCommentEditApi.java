@@ -1,23 +1,24 @@
 package neatlogic.module.process.api.processtask;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ProcessTaskAuditType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepContentVo;
 import neatlogic.framework.process.dto.ProcessTaskStepReplyVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.exception.processtask.ProcessTaskStepCommentNotFoundException;
-import neatlogic.module.process.service.IProcessStepHandlerUtil;
 import neatlogic.framework.restful.annotation.*;
 import neatlogic.framework.restful.constvalue.OperationTypeEnum;
 import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
+import neatlogic.module.process.service.IProcessStepHandlerUtil;
 import neatlogic.module.process.service.ProcessTaskService;
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,12 +96,12 @@ public class ProcessTaskCommentEditApi extends PrivateApiComponentBase {
         
         JSONObject resultObj = new JSONObject();
         List<String> typeList = new ArrayList<>();
-        typeList.add(ProcessTaskOperationType.STEP_COMMENT.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_COMPLETE.getValue());
-        typeList.add(ProcessTaskOperationType.STEP_BACK.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMMENT.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
+        typeList.add(ProcessTaskStepOperationType.STEP_BACK.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_RETREAT.getValue());
         typeList.add(ProcessTaskOperationType.PROCESSTASK_TRANSFER.getValue());
-		typeList.add(ProcessTaskOperationType.STEP_REAPPROVAL.getValue());
+		typeList.add(ProcessTaskStepOperationType.STEP_REAPPROVAL.getValue());
 		typeList.add(ProcessTaskOperationType.PROCESSTASK_START.getValue());
         resultObj.put("commentList", processTaskService.getProcessTaskStepReplyListByProcessTaskStepId(oldReplyVo.getProcessTaskStepId(), typeList));
         return resultObj;

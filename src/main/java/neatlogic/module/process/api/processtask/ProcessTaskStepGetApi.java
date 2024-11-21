@@ -8,8 +8,10 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.config.ConfigManager;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ItsmTenantConfig;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskScoreTemplateVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
@@ -81,14 +83,14 @@ public class ProcessTaskStepGetApi extends PrivateApiComponentBase {
                 .addOperationType(ProcessTaskOperationType.PROCESSTASK_SCORE);
         if (processTaskStepId != null) {
             builder.addProcessTaskStepId(processTaskStepId)
-                    .addOperationType(ProcessTaskOperationType.STEP_VIEW)
-                    .addOperationType(ProcessTaskOperationType.STEP_SAVE)
-                    .addOperationType(ProcessTaskOperationType.STEP_COMPLETE);
+                    .addOperationType(ProcessTaskStepOperationType.STEP_VIEW)
+                    .addOperationType(ProcessTaskStepOperationType.STEP_SAVE)
+                    .addOperationType(ProcessTaskStepOperationType.STEP_COMPLETE);
         }
         ProcessAuthManager processAuthManager = builder.build();
-        Map<Long, Set<ProcessTaskOperationType>> operationTypeSetMap = processAuthManager.getOperateMap();
+        Map<Long, Set<IOperationType>> operationTypeSetMap = processAuthManager.getOperateMap();
 
-        Set<ProcessTaskOperationType> taskOperationTypeSet = operationTypeSetMap.get(processTaskId);
+        Set<IOperationType> taskOperationTypeSet = operationTypeSetMap.get(processTaskId);
         if (!taskOperationTypeSet.contains(ProcessTaskOperationType.PROCESSTASK_VIEW)) {
             ProcessTaskPermissionDeniedException exception = processAuthManager.getProcessTaskPermissionDeniedException(processTaskId, ProcessTaskOperationType.PROCESSTASK_VIEW);
             if (exception != null) {
@@ -157,14 +159,14 @@ public class ProcessTaskStepGetApi extends PrivateApiComponentBase {
 
         ProcessTaskStepVo currentProcessTaskStepVo = processTaskVo.getCurrentProcessTaskStep();
         if (currentProcessTaskStepVo != null) {
-            Set<ProcessTaskOperationType> stepOperationTypeSet = operationTypeSetMap.get(processTaskStepId);
-            if (stepOperationTypeSet.contains(ProcessTaskOperationType.STEP_VIEW)) {
+            Set<IOperationType> stepOperationTypeSet = operationTypeSetMap.get(processTaskStepId);
+            if (stepOperationTypeSet.contains(ProcessTaskStepOperationType.STEP_VIEW)) {
                 phaser.register();
                 NeatLogicThread currentProcessTaskStepDetailThread = new NeatLogicThread("CURRENT_PROCESSTASKSTEP_DETAIL_" + processTaskStepId, true) {
                     @Override
                     protected void execute() {
                         try {
-                            processTaskService.getCurrentProcessTaskStepDetail(currentProcessTaskStepVo, stepOperationTypeSet.contains(ProcessTaskOperationType.STEP_COMPLETE));
+                            processTaskService.getCurrentProcessTaskStepDetail(currentProcessTaskStepVo, stepOperationTypeSet.contains(ProcessTaskStepOperationType.STEP_COMPLETE));
                         } finally {
                             phaser.arrive();
                         }
@@ -200,8 +202,8 @@ public class ProcessTaskStepGetApi extends PrivateApiComponentBase {
         processTaskVo.setMobileFormUIType(Integer.valueOf(ProcessConfig.MOBILE_FORM_UI_TYPE()));
         phaser.awaitAdvance(0);
         if (currentProcessTaskStepVo != null) {
-            Set<ProcessTaskOperationType> stepOperationTypeSet = operationTypeSetMap.get(processTaskStepId);
-            if (stepOperationTypeSet.contains(ProcessTaskOperationType.STEP_SAVE)) {
+            Set<IOperationType> stepOperationTypeSet = operationTypeSetMap.get(processTaskStepId);
+            if (stepOperationTypeSet.contains(ProcessTaskStepOperationType.STEP_SAVE)) {
                 // 回复框内容和附件暂存回显
                 processTaskService.setTemporaryData(processTaskVo, currentProcessTaskStepVo);
             }

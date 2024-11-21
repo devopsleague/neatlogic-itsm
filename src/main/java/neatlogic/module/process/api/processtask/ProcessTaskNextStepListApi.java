@@ -1,23 +1,22 @@
 package neatlogic.module.process.api.processtask;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.auth.core.AuthAction;
+import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
+import neatlogic.framework.process.operationauth.core.IOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.AssignableWorkerStepVo;
+import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
+import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
+import neatlogic.framework.restful.annotation.*;
+import neatlogic.framework.restful.constvalue.OperationTypeEnum;
+import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
+import neatlogic.module.process.service.ProcessTaskService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import com.alibaba.fastjson.JSONObject;
-
-import neatlogic.framework.common.constvalue.ApiParamType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.dto.ProcessTaskStepVo;
-import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
-import neatlogic.module.process.service.ProcessTaskService;
-import neatlogic.framework.restful.constvalue.OperationTypeEnum;
-import neatlogic.framework.restful.annotation.*;
-import neatlogic.framework.restful.core.privateapi.PrivateApiComponentBase;
 
 import java.util.List;
 import java.util.Map;
@@ -60,17 +59,17 @@ public class ProcessTaskNextStepListApi extends PrivateApiComponentBase {
         Long processTaskId = jsonObj.getLong("processTaskId");
         Long processTaskStepId = jsonObj.getLong("processTaskStepId");
         ProcessTaskVo processTaskVo = processTaskService.checkProcessTaskParamsIsLegal(processTaskId, processTaskStepId);
-        ProcessTaskOperationType operationType = ProcessTaskOperationType.STEP_COMPLETE;
+        IOperationType operationType = ProcessTaskStepOperationType.STEP_COMPLETE;
         String action = jsonObj.getString("action");
-        if (ProcessTaskOperationType.STEP_BACK.getValue().equals(action)) {
-            operationType = ProcessTaskOperationType.STEP_BACK;
+        if (ProcessTaskStepOperationType.STEP_BACK.getValue().equals(action)) {
+            operationType = ProcessTaskStepOperationType.STEP_BACK;
         }
 
         new ProcessAuthManager.StepOperationChecker(processTaskStepId, operationType).build()
             .checkAndNoPermissionThrowException();
         Map<Long, List<AssignableWorkerStepVo>> assignableWorkerStepMap = processTaskService.getAssignableWorkerStepMap(processTaskVo.getCurrentProcessTaskStep());
         List<ProcessTaskStepVo> nextStepList = null;
-        if (operationType == ProcessTaskOperationType.STEP_COMPLETE) {
+        if (operationType == ProcessTaskStepOperationType.STEP_COMPLETE) {
             nextStepList =  processTaskService.getForwardNextStepListByProcessTaskStepId(processTaskVo.getCurrentProcessTaskStep());
         } else {
             nextStepList =  processTaskService.getBackwardNextStepListByProcessTaskStepId(processTaskVo.getCurrentProcessTaskStep());

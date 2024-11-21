@@ -22,7 +22,7 @@ import neatlogic.framework.auth.core.AuthAction;
 import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.process.auth.PROCESS_BASE;
 import neatlogic.framework.process.constvalue.ProcessStepMode;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepRelVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.stephandler.core.ProcessTaskStepThread;
@@ -75,7 +75,7 @@ public class ProcessTaskStepExecuteSortComparatorTestApi extends PrivateApiCompo
 
         List<ProcessTaskStepThread> processTaskStepThreadList = new ArrayList<>();
         for (ProcessTaskStepVo processTaskStepVo : processTaskStepList) {
-            ProcessTaskStepThread thread = new ProcessTaskStepThread(ProcessTaskOperationType.STEP_ACTIVE, processTaskStepVo, ProcessStepMode.MT) {
+            ProcessTaskStepThread thread = new ProcessTaskStepThread(ProcessTaskStepOperationType.STEP_ACTIVE, processTaskStepVo, ProcessStepMode.MT) {
                 @Override
                 protected void myExecute(ProcessTaskStepVo processTaskStepVo) {
 

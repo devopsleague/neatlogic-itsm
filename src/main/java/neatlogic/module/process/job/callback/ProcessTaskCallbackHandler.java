@@ -26,7 +26,7 @@ import neatlogic.framework.common.constvalue.SystemUser;
 import neatlogic.framework.process.constvalue.AutoExecJobProcessSource;
 import neatlogic.framework.process.constvalue.AutoexecProcessStepHandlerType;
 import neatlogic.framework.process.constvalue.ProcessFlowDirection;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.automatic.FailPolicy;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.exception.processtask.ProcessTaskException;
@@ -149,7 +149,7 @@ public class ProcessTaskCallbackHandler extends AutoexecJobCallbackBase {
                 try {
                     JSONObject paramObj = processTaskStepVo.getParamObj();
                     paramObj.put("nextStepId", nextStepId);
-                    paramObj.put("action", ProcessTaskOperationType.STEP_COMPLETE.getValue());
+                    paramObj.put("action", ProcessTaskStepOperationType.STEP_COMPLETE.getValue());
                     UserContext.init(SystemUser.SYSTEM);
                     handler.autoComplete(processTaskStepVo);
                 } catch (ProcessTaskNoPermissionException e) {

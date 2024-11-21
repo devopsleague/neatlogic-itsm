@@ -6,6 +6,7 @@ import neatlogic.framework.common.constvalue.SystemUser;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESSTASK_MODIFY;
 import neatlogic.framework.process.constvalue.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
 import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;
@@ -29,8 +30,8 @@ import java.util.*;
 @Component
 public class TaskOperateHandler extends OperationAuthHandlerBase {
 
-    private Map<ProcessTaskOperationType,
-            TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<ProcessTaskOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>> operationBiPredicateMap = new HashMap<>();
+    private Map<IOperationType,
+            TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<IOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>> operationBiPredicateMap = new HashMap<>();
     @Autowired
     private ChannelMapper channelMapper;
     @Autowired
@@ -748,7 +749,7 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                             ProcessTaskStepStatus.HANG) != null) {
                         continue;
                     }
-                    flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskOperationType.STEP_TRANSFER, userUuid);
+                    flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskStepOperationType.STEP_TRANSFER, userUuid);
                     if (flag) {
                         return true;
                     }
@@ -890,7 +891,7 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
         operationBiPredicateMap.put(ProcessTaskOperationType.TRANSFER_EOA_STEP,
                 (processTaskVo, processTaskStepVo, userUuid, operationTypePermissionDeniedExceptionMap, extraParam) -> {
                     Long id = processTaskVo.getId();
-                    ProcessTaskOperationType operationType = ProcessTaskOperationType.TRANSFER_EOA_STEP;
+                    IOperationType operationType = ProcessTaskOperationType.TRANSFER_EOA_STEP;
                     //1.判断工单是否被隐藏，如果isShow=0，则提示“工单已隐藏”；
                     if (processTaskVo.getIsShow() == 0) {
                         operationTypePermissionDeniedExceptionMap.computeIfAbsent(id, key -> new HashMap<>())
@@ -938,7 +939,7 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
                                     ProcessTaskStepStatus.HANG) != null) {
                                 continue;
                             }
-                            flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskOperationType.STEP_TRANSFER, userUuid);
+                            flag = checkOperationAuthIsConfigured(processTaskVo, processTaskStep, ProcessTaskStepOperationType.STEP_TRANSFER, userUuid);
                             if (flag) {
                                 return true;
                             }
@@ -959,7 +960,7 @@ public class TaskOperateHandler extends OperationAuthHandlerBase {
     }
 
     @Override
-    public Map<ProcessTaskOperationType, TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<ProcessTaskOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>>
+    public Map<IOperationType, TernaryPredicate<ProcessTaskVo, ProcessTaskStepVo, String, Map<Long, Map<IOperationType, ProcessTaskPermissionDeniedException>>, JSONObject>>
     getOperationBiPredicateMap() {
         return operationBiPredicateMap;
     }

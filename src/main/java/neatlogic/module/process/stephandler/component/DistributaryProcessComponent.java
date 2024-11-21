@@ -1,13 +1,13 @@
 package neatlogic.module.process.stephandler.component;
 
+import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.process.constvalue.ProcessStepHandlerType;
 import neatlogic.framework.process.constvalue.ProcessStepMode;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskStepWorkerVo;
 import neatlogic.framework.process.exception.processtask.ProcessTaskException;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerBase;
-import com.alibaba.fastjson.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -75,7 +75,7 @@ public class DistributaryProcessComponent extends ProcessStepHandlerBase {
 	protected Set<Long> myGetNext(ProcessTaskStepVo currentProcessTaskStepVo, List<Long> nextStepIdList, Long nextStepId) throws ProcessTaskException {
 		JSONObject paramObj = currentProcessTaskStepVo.getParamObj();
 		String action = paramObj.getString("action");
-		if (ProcessTaskOperationType.STEP_BACK.getValue().equals(action)) {
+		if (ProcessTaskStepOperationType.STEP_BACK.getValue().equals(action)) {
 			return new HashSet<>();
 		} else {
 			return new HashSet<>(nextStepIdList);

@@ -21,12 +21,10 @@ import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.form.dto.FormAttributeVo;
 import neatlogic.framework.notify.core.INotifyTriggerType;
 import neatlogic.framework.notify.dto.NotifyReceiverVo;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.framework.process.constvalue.ProcessTaskStatus;
-import neatlogic.framework.process.constvalue.ProcessTaskStepStatus;
-import neatlogic.framework.process.constvalue.ProcessUserType;
+import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 
 import java.util.List;
 import java.util.Map;
@@ -166,7 +164,7 @@ public interface ProcessTaskService {
      * @Returns:boolean
      **/
     public boolean checkOperationAuthIsConfigured(ProcessTaskStepVo processTaskStepVo, String owner, String reporter,
-                                                  ProcessTaskOperationType operationType, String userUuid);
+                                                  IOperationType operationType, String userUuid);
 
     /**
      * @Description: 检查当前用户是否配置该权限
@@ -175,7 +173,7 @@ public interface ProcessTaskService {
      * @Params:[processTaskVo, operationType, userUuid]
      * @Returns:boolean
      **/
-    public boolean checkOperationAuthIsConfigured(ProcessTaskVo processTaskVo, ProcessTaskOperationType operationType,
+    public boolean checkOperationAuthIsConfigured(ProcessTaskVo processTaskVo, IOperationType operationType,
                                                   String userUuid);
 
     /**

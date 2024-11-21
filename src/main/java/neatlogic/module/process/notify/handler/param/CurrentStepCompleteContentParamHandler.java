@@ -16,14 +16,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.*/
 package neatlogic.module.process.notify.handler.param;
 
 import neatlogic.framework.notify.core.INotifyTriggerType;
-import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
-import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
-import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepContentVo;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.notify.constvalue.ProcessTaskStepNotifyParam;
 import neatlogic.framework.process.notify.constvalue.ProcessTaskStepNotifyTriggerType;
 import neatlogic.framework.process.notify.core.ProcessTaskNotifyParamHandlerBase;
+import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;
+import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -54,7 +54,7 @@ public class CurrentStepCompleteContentParamHandler extends ProcessTaskNotifyPar
         List<ProcessTaskStepContentVo> processTaskStepContentList = processTaskMapper.getProcessTaskStepContentByProcessTaskStepId(processTaskStepVo.getId());
         // 遍历列表，找出最近一次处理内容
         for (ProcessTaskStepContentVo contentVo : processTaskStepContentList) {
-            if (Objects.equals(contentVo.getType(), ProcessTaskOperationType.STEP_COMPLETE.getValue())) {
+            if (Objects.equals(contentVo.getType(), ProcessTaskStepOperationType.STEP_COMPLETE.getValue())) {
                 String contentHash = contentVo.getContentHash();
                 if (StringUtils.isBlank(contentHash)) {
                     return null;
