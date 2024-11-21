@@ -10,6 +10,7 @@ import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.dto.processconfig.ActionConfigActionVo;
 import neatlogic.framework.process.dto.processconfig.ActionConfigVo;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.stephandler.core.IProcessStepAssistantHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerBase;
 import neatlogic.framework.process.util.ProcessConfigUtil;

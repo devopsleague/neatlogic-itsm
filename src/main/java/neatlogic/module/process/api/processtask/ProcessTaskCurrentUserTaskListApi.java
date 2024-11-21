@@ -8,7 +8,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.common.dto.BasePageVo;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.SlaStatus;
 import neatlogic.framework.process.dto.*;

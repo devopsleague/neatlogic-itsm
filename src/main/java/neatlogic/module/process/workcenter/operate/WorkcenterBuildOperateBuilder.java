@@ -3,7 +3,7 @@ package neatlogic.module.process.workcenter.operate;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 
 public class WorkcenterBuildOperateBuilder {
     JSONObject buildOperateJson = new JSONObject();

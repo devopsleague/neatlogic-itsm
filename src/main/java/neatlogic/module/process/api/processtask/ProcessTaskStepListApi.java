@@ -12,6 +12,7 @@ import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
 import neatlogic.framework.process.exception.process.ProcessStepHandlerNotFoundException;
 import neatlogic.framework.process.exception.process.ProcessStepUtilHandlerNotFoundException;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.IProcessStepInternalHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerFactory;

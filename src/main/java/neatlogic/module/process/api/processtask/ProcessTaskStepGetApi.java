@@ -8,7 +8,7 @@ import neatlogic.framework.common.constvalue.ApiParamType;
 import neatlogic.framework.config.ConfigManager;
 import neatlogic.framework.exception.type.PermissionDeniedException;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ItsmTenantConfig;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;

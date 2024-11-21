@@ -36,6 +36,7 @@ import neatlogic.framework.process.column.core.IProcessTaskColumn;
 import neatlogic.framework.process.column.core.ProcessTaskColumnFactory;
 import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.IProcessStepHandler;
 import neatlogic.framework.process.stephandler.core.ProcessStepHandlerFactory;

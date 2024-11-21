@@ -6,6 +6,7 @@ import neatlogic.framework.common.constvalue.SystemUser;
 import neatlogic.framework.dto.AuthenticationInfoVo;
 import neatlogic.framework.process.auth.PROCESSTASK_MODIFY;
 import neatlogic.framework.process.constvalue.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.module.process.dao.mapper.catalog.CatalogMapper;
 import neatlogic.module.process.dao.mapper.catalog.ChannelMapper;
 import neatlogic.module.process.dao.mapper.catalog.ChannelTypeMapper;

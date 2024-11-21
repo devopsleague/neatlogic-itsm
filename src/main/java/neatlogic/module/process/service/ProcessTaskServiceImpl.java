@@ -64,6 +64,7 @@ import neatlogic.framework.process.exception.processtask.*;
 import neatlogic.framework.process.exception.processtask.task.ProcessTaskStepTaskNotCompleteException;
 import neatlogic.framework.process.fulltextindex.ProcessFullTextIndexType;
 import neatlogic.framework.process.notify.constvalue.ProcessTaskStepNotifyTriggerType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.*;
 import neatlogic.framework.process.stepremind.core.ProcessTaskStepRemindTypeFactory;

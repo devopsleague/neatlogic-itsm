@@ -20,7 +20,7 @@ package neatlogic.module.process.stephandler.postprocessor;
 import com.alibaba.fastjson.JSONObject;
 import neatlogic.framework.asynchronization.threadlocal.UserContext;
 import neatlogic.framework.common.constvalue.GroupSearch;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.constvalue.ProcessUserType;
 import neatlogic.framework.process.dto.*;

@@ -1,7 +1,7 @@
 package neatlogic.module.process.operationauth.handler;
 
 import com.alibaba.fastjson.JSONObject;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepVo;
 import neatlogic.framework.process.dto.ProcessTaskVo;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;

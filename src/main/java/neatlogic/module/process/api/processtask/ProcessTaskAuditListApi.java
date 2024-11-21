@@ -12,7 +12,7 @@ import neatlogic.framework.process.audithandler.core.IProcessTaskStepAuditDetail
 import neatlogic.framework.process.audithandler.core.ProcessTaskAuditDetailTypeFactory;
 import neatlogic.framework.process.audithandler.core.ProcessTaskStepAuditDetailHandlerFactory;
 import neatlogic.framework.process.auth.PROCESS_BASE;
-import neatlogic.framework.process.constvalue.IOperationType;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskOperationType;
 import neatlogic.framework.process.constvalue.ProcessTaskStepOperationType;
 import neatlogic.framework.process.dto.ProcessTaskStepAuditDetailVo;

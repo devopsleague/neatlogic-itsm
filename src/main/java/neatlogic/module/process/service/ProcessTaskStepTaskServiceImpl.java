@@ -22,6 +22,7 @@ import neatlogic.framework.dto.UserVo;
 import neatlogic.framework.file.dao.mapper.FileMapper;
 import neatlogic.framework.file.dto.FileVo;
 import neatlogic.framework.process.constvalue.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskMapper;
 import neatlogic.module.process.dao.mapper.processtask.ProcessTaskStepTaskMapper;
 import neatlogic.module.process.dao.mapper.SelectContentByHashMapper;

@@ -38,6 +38,7 @@ import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.crossover.IProcessStepHandlerCrossoverUtil;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.processtask.*;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.stepremind.core.IProcessTaskStepRemindType;
 import neatlogic.framework.process.workerpolicy.core.IWorkerPolicyHandler;
 import neatlogic.framework.process.workerpolicy.core.WorkerPolicyHandlerFactory;

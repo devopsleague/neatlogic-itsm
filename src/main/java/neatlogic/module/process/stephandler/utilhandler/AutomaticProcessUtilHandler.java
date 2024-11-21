@@ -15,6 +15,7 @@ import neatlogic.framework.process.dto.processconfig.AutomaticCallbackConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticIntervalCallbackConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticRequestConfigVo;
 import neatlogic.framework.process.dto.processconfig.AutomaticTimeWindowConfigVo;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 import neatlogic.framework.process.operationauth.core.ProcessAuthManager;
 import neatlogic.framework.process.stephandler.core.ProcessStepInternalHandlerBase;
 import neatlogic.framework.process.util.ProcessConfigUtil;

@@ -24,6 +24,7 @@ import neatlogic.framework.notify.dto.NotifyReceiverVo;
 import neatlogic.framework.process.constvalue.*;
 import neatlogic.framework.process.dto.*;
 import neatlogic.framework.process.exception.operationauth.ProcessTaskPermissionDeniedException;
+import neatlogic.framework.process.operationauth.core.IOperationType;
 
 import java.util.List;
 import java.util.Map;
